@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Приложения</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #121212;
+      --card-color: #1e1e1e;
+      --accent-color: #00bcd4;
+      --text-color: #ffffff;
+      --secondary-color: #aaaaaa;
+      --radius: 16px;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      font-family: 'Roboto', sans-serif;
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      padding: 40px 0;
+      min-height: 100vh;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 700px;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--secondary-color);
+      margin: 32px 0 12px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 16px;
+      background-color: var(--card-color);
+      padding: 16px;
+      border-radius: var(--radius);
+    }
+
+    .app-button {
+      background-color: #2a2a2a;
+      border: none;
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text-color);
+      font-size: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.1s ease, background-color 0.2s ease;
+    }
+
+    .app-button:active {
+      transform: scale(0.96);
+      background-color: #3a3a3a;
+    }
+
+    .material-icons-outlined {
+      font-size: 32px;
+      margin-bottom: 8px;
+      color: var(--accent-color);
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h2>Музыка</h2>
+    <div class="container">
+      <a href="yandexmusic://" class="app-button">
+        <span class="material-icons-outlined">music_note</span>
+        Yandex Music
+      </a>
+      <a href="youtubemusic://" class="app-button">
+        <span class="material-icons-outlined">library_music</span>
+        YouTube Music
+      </a>
+      <a href="music://" class="app-button">
+        <span class="material-icons-outlined">headphones</span>
+        Apple Music
+      </a>
+    </div>
+
+    <h2>Навигация</h2>
+    <div class="container">
+      <a href="yandexnavi://" class="app-button">
+        <span class="material-icons-outlined">navigation</span>
+        Yandex Навигатор
+      </a>
+      <a href="yandexmaps://" class="app-button">
+        <span class="material-icons-outlined">map</span>
+        Yandex Карты
+      </a>
+      <a href="comgooglemaps://" class="app-button">
+        <span class="material-icons-outlined">pin_drop</span>
+        Google Maps
+      </a>
+    </div>
+
+    <h2>Работа</h2>
+    <div class="container">
+      <a href="zoomus://" class="app-button">
+        <span class="material-icons-outlined">videocam</span>
+        Zoom
+      </a>
+      <a href="chatgpt://" class="app-button">
+        <span class="material-icons-outlined">psychology</span>
+        ChatGPT
+      </a>
+      <a href="https://deepseek.com" class="app-button">
+        <span class="material-icons-outlined">search</span>
+        DeepSeek
+      </a>
+    </div>
+
+    <h2>Развлечения</h2>
+    <div class="container">
+      <a href="https://kinopub.me" class="app-button">
+        <span class="material-icons-outlined">theaters</span>
+        Кинопаб
+      </a>
+      <a href="https://www.kinopoisk.ru" class="app-button">
+        <span class="material-icons-outlined">local_movies</span>
+        Кинопоиск
+      </a>
+      <a href="vnd.youtube://" class="app-button">
+        <span class="material-icons-outlined">smart_display</span>
+        YouTube
+      </a>
+    </div>
+  </div>
+</body>
+</html>
