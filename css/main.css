@@ -1,0 +1,156 @@
+:root {
+    --bg-start: #1d2129;
+    --bg-end: #181c23;
+    --card-color: #1f232c;
+    --accent-color: #00bcd4;
+    --text-color: #d4d4d4;
+    --secondary-color: #aaaaaa;
+    --radius: 16px;
+}
+
+html {
+    background: var(--bg-end);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(50deg, var(--bg-start), var(--bg-end));
+    font-family: 'Roboto', sans-serif;
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    padding-top: 20px;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.wrapper {
+    width: 100%;
+    max-width: 700px;
+    padding: 0 20px 80px 20px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.app-button {
+    background-color: color(srgb 0.16 0.18 0.22 / 0.7);
+    border: none;
+    border-radius: var(--radius);
+    padding: 13px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+.app-button:active,
+.app-button:hover {
+    transform: scale(1.06);
+    background-color: rgb(40 94 231);
+}
+
+.app-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 9px;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.section {
+    background-color: var(--card-color);
+    border-radius: var(--radius);
+    padding: 12px;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--secondary-color);
+    margin: 0 0 12px 0;
+    padding-left: 4px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.settings-toggle {
+    position: absolute;
+    bottom: 23px;
+    right: 23px;
+    width: 56px;
+    height: 56px;
+    background-color: var(--card-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 101;
+    color: var(--secondary-color);
+}
+
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    display: none;
+}
+
+.settings-overlay.active {
+    display: block;
+}
+
+.settings-panel {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background-color: var(--card-color);
+    border-left: 1px solid #333;
+    padding: 24px 16px;
+    box-sizing: border-box;
+    transition: right 0.3s ease;
+    z-index: 102;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.settings-panel.open {
+    right: 0;
+}
+
+.settings-panel label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    padding: 12px;
+    border-radius: var(--radius);
+    background-color: #2a2f38;
+    cursor: pointer;
+}
+
+.settings-panel input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
