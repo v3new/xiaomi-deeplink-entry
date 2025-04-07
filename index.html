@@ -26,7 +26,7 @@
       display: flex;
       justify-content: center;
       align-items: start;
-      padding: 40px 0;
+      padding-top: 20px;
       min-height: 100vh;
     }
 
@@ -37,20 +37,25 @@
       box-sizing: border-box;
     }
 
-    h2 {
-      font-size: 18px;
+    .section {
+      background-color: var(--card-color);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 16px;
       font-weight: 500;
       color: var(--secondary-color);
-      margin: 32px 0 12px;
+      margin: 0 0 16px 0;
+      padding-left: 4px;
     }
 
     .container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
       gap: 12px;
-      background-color: var(--card-color);
-      padding: 16px;
-      border-radius: var(--radius);
     }
 
     .app-button {
@@ -83,69 +88,79 @@
 </head>
 <body>
   <div class="wrapper">
-    <h2>Музыка</h2>
-    <div class="container">
-      <a href="yandexmusic://" class="app-button">
-        <span class="material-icons-outlined">music_note</span>
-        Yandex Music
-      </a>
-      <a href="youtubemusic://" class="app-button">
-        <span class="material-icons-outlined">library_music</span>
-        YouTube Music
-      </a>
-      <a href="music://" class="app-button">
-        <span class="material-icons-outlined">headphones</span>
-        Apple Music
-      </a>
+
+    <div class="section">
+      <h2 class="section-title">Музыка</h2>
+      <div class="container">
+        <a href="yandexmusic://" class="app-button">
+          <span class="material-icons-outlined">music_note</span>
+          Yandex Music
+        </a>
+        <a href="youtubemusic://" class="app-button">
+          <span class="material-icons-outlined">library_music</span>
+          YouTube Music
+        </a>
+        <a href="music://" class="app-button">
+          <span class="material-icons-outlined">headphones</span>
+          Apple Music
+        </a>
+      </div>
     </div>
 
-    <h2>Навигация</h2>
-    <div class="container">
-      <a href="yandexnavi://" class="app-button">
-        <span class="material-icons-outlined">navigation</span>
-        Yandex Навигатор
-      </a>
-      <a href="yandexmaps://" class="app-button">
-        <span class="material-icons-outlined">map</span>
-        Yandex Карты
-      </a>
-      <a href="comgooglemaps://" class="app-button">
-        <span class="material-icons-outlined">pin_drop</span>
-        Google Maps
-      </a>
+    <div class="section">
+      <h2 class="section-title">Навигация</h2>
+      <div class="container">
+        <a href="yandexnavi://" class="app-button">
+          <span class="material-icons-outlined">navigation</span>
+          Yandex Навигатор
+        </a>
+        <a href="yandexmaps://" class="app-button">
+          <span class="material-icons-outlined">map</span>
+          Yandex Карты
+        </a>
+        <a href="comgooglemaps://" class="app-button">
+          <span class="material-icons-outlined">pin_drop</span>
+          Google Maps
+        </a>
+      </div>
     </div>
 
-    <h2>Работа</h2>
-    <div class="container">
-      <a href="zoomus://" class="app-button">
-        <span class="material-icons-outlined">videocam</span>
-        Zoom
-      </a>
-      <a href="chatgpt://" class="app-button">
-        <span class="material-icons-outlined">psychology</span>
-        ChatGPT
-      </a>
-      <a href="https://deepseek.com" class="app-button">
-        <span class="material-icons-outlined">search</span>
-        DeepSeek
-      </a>
+    <div class="section">
+      <h2 class="section-title">Работа</h2>
+      <div class="container">
+        <a href="zoomus://" class="app-button">
+          <span class="material-icons-outlined">videocam</span>
+          Zoom
+        </a>
+        <a href="chatgpt://" class="app-button">
+          <span class="material-icons-outlined">psychology</span>
+          ChatGPT
+        </a>
+        <a href="https://deepseek.com" class="app-button">
+          <span class="material-icons-outlined">search</span>
+          DeepSeek
+        </a>
+      </div>
     </div>
 
-    <h2>Развлечения</h2>
-    <div class="container">
-      <a href="https://kinopub.me" class="app-button">
-        <span class="material-icons-outlined">theaters</span>
-        Кинопаб
-      </a>
-      <a href="https://www.kinopoisk.ru" class="app-button">
-        <span class="material-icons-outlined">local_movies</span>
-        Кинопоиск
-      </a>
-      <a href="vnd.youtube://" class="app-button">
-        <span class="material-icons-outlined">smart_display</span>
-        YouTube
-      </a>
+    <div class="section">
+      <h2 class="section-title">Развлечения</h2>
+      <div class="container">
+        <a href="https://kinopub.me" class="app-button">
+          <span class="material-icons-outlined">theaters</span>
+          Кинопаб
+        </a>
+        <a href="https://www.kinopoisk.ru" class="app-button">
+          <span class="material-icons-outlined">local_movies</span>
+          Кинопоиск
+        </a>
+        <a href="vnd.youtube://" class="app-button">
+          <span class="material-icons-outlined">smart_display</span>
+          YouTube
+        </a>
+      </div>
     </div>
+
   </div>
 </body>
 </html>
