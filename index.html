@@ -8,8 +8,9 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
   <style>
     :root {
-      --bg-color: #121212;
-      --card-color: #1e1e1e;
+      --bg-start: #1a1e26;
+      --bg-end: #181c23;
+      --card-color: #1f232c;
       --accent-color: #00bcd4;
       --text-color: #ffffff;
       --secondary-color: #aaaaaa;
@@ -19,7 +20,7 @@
     body {
       margin: 0;
       padding: 0;
-      background-color: var(--bg-color);
+      background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
       font-family: 'Roboto', sans-serif;
       color: var(--text-color);
       display: flex;
@@ -45,43 +46,38 @@
 
     .container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 12px;
       background-color: var(--card-color);
       padding: 16px;
       border-radius: var(--radius);
     }
 
     .app-button {
-      background-color: #2a2a2a;
+      background-color: #2a2f38;
       border: none;
       border-radius: var(--radius);
-      padding: 16px;
+      padding: 12px;
       text-align: center;
       text-decoration: none;
       color: var(--text-color);
-      font-size: 16px;
+      font-size: 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       transition: transform 0.1s ease, background-color 0.2s ease;
     }
 
     .app-button:active {
       transform: scale(0.96);
-      background-color: #3a3a3a;
+      background-color: #353b45;
     }
 
     .material-icons-outlined {
-      font-size: 32px;
-      margin-bottom: 8px;
+      font-size: 28px;
+      margin-bottom: 6px;
       color: var(--accent-color);
-    }
-
-    @media (max-width: 480px) {
-      .container {
-        grid-template-columns: repeat(2, 1fr);
-      }
     }
   </style>
 </head>
