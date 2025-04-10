@@ -47,7 +47,7 @@
     document.getElementById('settingsOverlay').addEventListener('click', closeSettings);
 
     function renderApp(app) {
-      return `<a class="app-button" href="intent://#Intent;action=android.intent.action.VIEW;package=${app.package};end" data-id="${app.id}">
+      return `<a class="app-button" href="intent://#Intent;action=android.intent.action.VIEW;scheme=yandexmusic;package=${app.package};S.browser_fallback_url=https%3A%2F%2Fmusic.yandex.ru;end" data-id="${app.id}">
           <img src="${app.icon}" alt="${app.name}" class="app-icon" />
           ${app.name}
         </a>`;
