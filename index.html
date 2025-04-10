@@ -47,7 +47,8 @@
     document.getElementById('settingsOverlay').addEventListener('click', closeSettings);
 
     function renderApp(app) {
-      return `<a class="app-button" href="intent://#Intent;action=android.intent.action.VIEW;package=${app.package};S.browser_fallback_url=https%3A%2F%2Fmusic.yandex.ru;end" data-id="${app.id}">
+      const action = 'android.intent.action.VIEW';
+      return `<a class="app-button" href="intent://#Intent;action=${action};scheme=${app.scheme};package=${app.package};S.browser_fallback_url=${encodeURIComponent(app.fallbackUrl)};end" data-id="${app.id}">
           <img src="${app.icon}" alt="${app.name}" class="app-icon" />
           ${app.name}
         </a>`;
