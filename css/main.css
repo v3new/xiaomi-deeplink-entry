@@ -47,6 +47,27 @@ body {
     position: relative;
 }
 
+.section {
+    background-color: var(--card-color);
+    border-radius: var(--radius);
+    padding: 12px;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--secondary-color);
+    margin: 0 0 12px 0;
+    padding-left: 4px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+}
+
 .app-button {
     background-color: color(srgb 0.16 0.18 0.22 / 0.7);
     border: none;
@@ -75,27 +96,6 @@ body {
     border-radius: 9px;
     margin-bottom: 10px;
     opacity: 0.8;
-}
-
-.section {
-    background-color: var(--card-color);
-    border-radius: var(--radius);
-    padding: 12px;
-    margin-bottom: 20px;
-}
-
-.section-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--secondary-color);
-    margin: 0 0 12px 0;
-    padding-left: 4px;
-}
-
-.container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px;
 }
 
 .settings-toggle {
