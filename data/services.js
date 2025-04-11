@@ -12,8 +12,8 @@ const SERVICES = {
       id: 'youtube-music',
       name: 'YouTube Music',
       package: 'com.google.android.apps.youtube.music',
-      scheme: 'youtubemusic',
-      fallbackUrl: 'https://music.youtube.com',
+      scheme: 'youtube',
+      fallbackUrl: 'https://app.music.youtube.com',
       icon: 'https://play-lh.googleusercontent.com/zD8UA5CRdiPzbvTwGKtzR4KjQpxqEK6X0tGDpzEaOo0xPEvG6HUiC_0qkpTfzpuMTqU=s64-rw',
     },
     {
@@ -46,7 +46,7 @@ const SERVICES = {
       id: 'google-maps',
       name: 'Google Maps',
       package: 'com.google.android.apps.maps',
-      scheme: 'googlemaps',
+      scheme: 'geo',
       fallbackUrl: 'https://maps.google.com',
       icon: 'https://play-lh.googleusercontent.com/Kf8WTct65hFJxBUDm5E-EpYsiDoLQiGGbnuyP6HBNax43YShXti9THPon1YKB6zPYpA=s64-rw',
     }
@@ -98,8 +98,8 @@ const SERVICES = {
       id: 'youtube',
       name: 'YouTube',
       package: 'com.google.android.youtube',
-      scheme: 'youtube',
-      fallbackUrl: 'https://youtube.com',
+      scheme: 'vnd.youtube',
+      fallbackUrl: 'https://m.youtube.com',
       icon: 'https://play-lh.googleusercontent.com/6am0i3walYwNLc08QOOhRJttQENNGkhlKajXSERf3JnPVRQczIyxw2w3DxeMRTOSdsY=s64-rw',
     }
   ]
