@@ -20,7 +20,7 @@ const SERVICES = {
       id: 'apple-music',
       name: 'Apple Music',
       package: 'com.apple.android.music',
-      scheme: 'applemusic',
+      scheme: 'apple-music',
       fallbackUrl: 'https://music.apple.com',
       icon: 'https://play-lh.googleusercontent.com/mOkjjo5Rzcpk7BsHrsLWnqVadUK1FlLd2-UlQvYkLL4E9A0LpyODNIQinXPfUMjUrbE=s64-rw',
     }
@@ -72,7 +72,7 @@ const SERVICES = {
       id: 'chatgpt',
       name: 'ChatGPT',
       package: 'com.openai.chatgpt',
-      scheme: 'chatgpt',
+      scheme: 'com.openai.chat',
       fallbackUrl: 'https://chat.openai.com',
       icon: 'https://play-lh.googleusercontent.com/lmG9HlI0awHie0cyBieWXeNjpyXvHPwDBb8MNOVIyp0P8VEh95AiBHtUZSDVR3HLe3A=s64-rw',
     },
