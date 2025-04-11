@@ -12,7 +12,7 @@ const SERVICES = {
       id: 'youtube-music',
       name: 'YouTube Music',
       package: 'com.google.android.apps.youtube.music',
-      scheme: 'youtube',
+      scheme: 'vnd.youtube.music.launch',
       fallbackUrl: 'https://app.music.youtube.com',
       icon: 'https://play-lh.googleusercontent.com/zD8UA5CRdiPzbvTwGKtzR4KjQpxqEK6X0tGDpzEaOo0xPEvG6HUiC_0qkpTfzpuMTqU=s64-rw',
     },
