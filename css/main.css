@@ -1,11 +1,23 @@
 :root {
-    --bg-start: #1d2129;
-    --bg-end: #181c23;
-    --card-color: #1f232c;
-    --accent-color: #00bcd4;
-    --text-color: #d4d4d4;
-    --secondary-color: #aaaaaa;
+    --bg-start: #fff;
+    --bg-end: #f5f5f5;
+    --card-color: #fff;
+    --accent-color: #007bff;
+    --text-color: #111;
+    --secondary-color: #555;
     --radius: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-start: #1d2129;
+        --bg-end: #181c23;
+        --card-color: #1f232c;
+        --accent-color: #00bcd4;
+        --text-color: #d4d4d4;
+        --secondary-color: #aaaaaa;
+        --radius: 16px;
+    }
 }
 
 html {
