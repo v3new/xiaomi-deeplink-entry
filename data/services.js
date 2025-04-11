@@ -49,6 +49,14 @@ const SERVICES = {
       scheme: 'geo',
       fallbackUrl: 'https://maps.google.com',
       icon: 'https://play-lh.googleusercontent.com/Kf8WTct65hFJxBUDm5E-EpYsiDoLQiGGbnuyP6HBNax43YShXti9THPon1YKB6zPYpA=s64-rw',
+    },
+    {
+      id: '2gis',
+      name: '2GIS',
+      package: 'ru.dublgis.dgismobile',
+      scheme: 'dublgis',
+      fallbackUrl: 'https://2gis.ru',
+      icon: 'https://play-lh.googleusercontent.com/55huczUZ05ruaVynURUNqzgTu0qXLF-SPQZKtE9KA6_BavI-g0NgXz1NR98n5xX33HwD=s64-rw',
     }
   ],
   work: [
@@ -82,7 +90,7 @@ const SERVICES = {
       id: 'kinopub',
       name: 'Kinopub',
       package: 'com.kinopub',
-      scheme: 'kinopub',
+      scheme: 'kp',
       fallbackUrl: 'https://kino.pub',
       icon: 'https://img.iconpusher.com/com.kinopub/1.33.png?w=64&q=75',
     },
