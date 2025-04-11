@@ -1,11 +1,25 @@
 :root {
-    --bg-start: #1d2129;
-    --bg-end: #181c23;
-    --card-color: #1f232c;
-    --accent-color: #00bcd4;
-    --text-color: #d4d4d4;
-    --secondary-color: #aaaaaa;
+    --bg-start: #dee6ff;
+    --bg-end: #ebf0ff;
+    --card-color: #fff;
+    --btn-color: rgb(199 217 254 / 70%);
+    --accent-color: #007bff;
+    --text-color: #111;
+    --secondary-color: #555;
     --radius: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-start: #1d2129;
+        --bg-end: #181c23;
+        --card-color: #1f232c;
+        --btn-color: rgb(41 46 56 / 70%);
+        --accent-color: #00bcd4;
+        --text-color: #d4d4d4;
+        --secondary-color: #aaaaaa;
+        --radius: 16px;
+    }
 }
 
 html {
@@ -35,8 +49,29 @@ body {
     position: relative;
 }
 
+.section {
+    background-color: var(--card-color);
+    border-radius: var(--radius);
+    padding: 12px;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--secondary-color);
+    margin: 0 0 11px 0;
+    padding-left: 4px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+}
+
 .app-button {
-    background-color: color(srgb 0.16 0.18 0.22 / 0.7);
+    background-color: var(--btn-color);
     border: none;
     border-radius: var(--radius);
     padding: 13px;
@@ -63,27 +98,6 @@ body {
     border-radius: 9px;
     margin-bottom: 10px;
     opacity: 0.8;
-}
-
-.section {
-    background-color: var(--card-color);
-    border-radius: var(--radius);
-    padding: 12px;
-    margin-bottom: 20px;
-}
-
-.section-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--secondary-color);
-    margin: 0 0 12px 0;
-    padding-left: 4px;
-}
-
-.container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px;
 }
 
 .settings-toggle {
