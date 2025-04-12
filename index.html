@@ -8,17 +8,23 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Xiaomi DeepLink Entry</title>
-    <link href="css/main.css?v=202504130056" rel="stylesheet" />
-    <script src="data/services.js?v=202504130056"></script>
+    <link href="css/main.css?v=202504130359" rel="stylesheet" />
+    <script src="data/services.js?v=202504130359"></script>
   </head>
   <body>
     <div class="settings-overlay" id="settingsOverlay"></div>
     <div class="wrapper">
       <div id="sections"></div>
       <div class="settings-panel" id="settingsPanel"></div>
-      <span class="settings-toggle" onclick="toggleSettings()">
-        <img src="svg/settings.svg" alt="settings" />
-      </span>
+      <div class="footer">
+        <div class="links">
+          <a href="https://t.me/XiaomiEVclub" class="xiaomi-club" target="_blank">Xiaomi Enthusiasts: @XiaomiEVclub</a>
+          <a href="https://t.me/v3new" class="idea-hub" target="_blank">Idea Hub: @v3new</a>
+        </div>
+        <div class="settings-toggle" onclick="toggleSettings()">
+          <img src="svg/settings.svg" alt="settings" />
+        </div>
+      </div>
     </div>
 
     <script>
@@ -115,7 +121,7 @@
 
           // Create a hidden anchor element to trigger the deeplink
           const link = document.createElement("a");
-          link.href = `${scheme}://${path}`;
+          link.href = scheme ? `${scheme}://${path}` : `https://play.google.com/store/apps/details?id=${packageName}`;
           link.style.display = "none";
           document.body.appendChild(link);
           link.click();
