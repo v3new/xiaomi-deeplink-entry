@@ -121,7 +121,7 @@
 
           // Create a hidden anchor element to trigger the deeplink
           const link = document.createElement("a");
-          link.href = scheme ? `${scheme}://${path}` : `https://play.google.com/store/apps/details?id=${packageName}`;
+          link.href = scheme !== 'undefined' ? `${scheme}://${path}` : `https://play.google.com/store/apps/details?id=${packageName}`;
           link.style.display = "none";
           document.body.appendChild(link);
           link.click();
