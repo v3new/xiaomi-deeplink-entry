@@ -1,102 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Disable caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Xiaomi DeepLink Entry</title>
+    <link href="css/main.css?v=202504130056" rel="stylesheet" />
+    <script src="data/services.js?v=202504130056"></script>
+  </head>
+  <body>
+    <div class="settings-overlay" id="settingsOverlay"></div>
+    <div class="wrapper">
+      <div id="sections"></div>
+      <div class="settings-panel" id="settingsPanel"></div>
+      <span class="settings-toggle" onclick="toggleSettings()">
+        <img src="svg/settings.svg" alt="settings" />
+      </span>
+    </div>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Xiaomi DeepLink Entry</title>
-  <link rel="stylesheet" href="css/main.css">
-</head>
+    <script>
+      (function () {
+        // Storage keys for localStorage
+        const STORAGE_KEY = 'visible_services';
+        const STORAGE_ORDER_KEY = 'services_order';
 
-<body>
-  <div class="settings-overlay" id="settingsOverlay"></div>
-  <div class="wrapper">
-    <div id="sections"></div>
-    <div class="settings-panel" id="settingsPanel"></div>
-    <span class="settings-toggle" onclick="toggleSettings()">
-      <img src="svg/settings.svg" alt="settings" />
-    </span>
-  </div>
-  <script src="data/services.js"></script>
-  <script>
-    const STORAGE_KEY = 'visible_services';
+        // Load service visibility from localStorage
+        const loadVisibility = () => {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (!saved) return {};
+          try {
+            return JSON.parse(saved);
+          } catch (error) {
+            console.error("Error parsing visibility data", error);
+            return {};
+          }
+        };
 
-    function loadVisibility() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) return {};
-      try { return JSON.parse(saved); } catch { return {}; }
-    }
+        // Save service visibility state to localStorage
+        const saveVisibility = (state) => {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        };
 
-    function saveVisibility(state) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
+        // Load service order from localStorage
+        const loadOrder = () => {
+          const saved = localStorage.getItem(STORAGE_ORDER_KEY);
+          if (!saved) return [];
+          try {
+            return JSON.parse(saved);
+          } catch (error) {
+            console.error("Error parsing order data", error);
+            return [];
+          }
+        };
 
-    function toggleSettings() {
-      const panel = document.getElementById('settingsPanel');
-      const overlay = document.getElementById('settingsOverlay');
-      const isOpen = panel.classList.contains('open');
-      panel.classList.toggle('open');
-      overlay.classList.toggle('active', !isOpen);
-    }
+        // Save service order to localStorage
+        const saveOrder = (order) => {
+          localStorage.setItem(STORAGE_ORDER_KEY, JSON.stringify(order));
+        };
 
-    function closeSettings() {
-      document.getElementById('settingsPanel').classList.remove('open');
-      document.getElementById('settingsOverlay').classList.remove('active');
-    }
+        // Determine if the application should be visible
+        // If there is no saved visibility state, use the app.showOnLaunch default
+        const isAppVisible = (app, visibility) =>
+          app.id in visibility ? visibility[app.id] : Boolean(app.showOnLaunch);
 
-    document.getElementById('settingsOverlay').addEventListener('click', closeSettings);
+        // Sort applications based on the saved order
+        // If an application's order is not defined, it remains in the original position
+        const sortApps = (apps) => {
+          const order = loadOrder();
+          return apps.slice().sort((a, b) => {
+            const idxA = order.indexOf(a.id);
+            const idxB = order.indexOf(b.id);
+            if (idxA === -1 && idxB === -1) return 0;
+            if (idxA === -1) return 1;
+            if (idxB === -1) return -1;
+            return idxA - idxB;
+          });
+        };
 
-    function renderApp(app) {
-      const action = 'android.intent.action.VIEW';
-      return `<a class="app-button" href="intent://#Intent;action=${action};scheme=${app.scheme};package=${app.package};S.browser_fallback_url=${encodeURIComponent(app.fallbackUrl)};end" data-id="${app.id}">
-          <img src="${app.icon}" alt="${app.name}" class="app-icon" />
-          ${app.name}
-        </a>`;
-    }
+        // Toggle the settings panel display
+        const toggleSettings = () => {
+          const panel = document.getElementById("settingsPanel");
+          const overlay = document.getElementById("settingsOverlay");
+          const isOpen = panel.classList.contains("open");
+          panel.classList.toggle("open");
+          overlay.classList.toggle("active", !isOpen);
+        };
 
-    function renderSections() {
-      const visibility = loadVisibility();
-      const container = document.getElementById('sections');
-      container.innerHTML = '';
+        // Close the settings panel
+        const closeSettings = () => {
+          document.getElementById("settingsPanel").classList.remove("open");
+          document.getElementById("settingsOverlay").classList.remove("active");
+        };
 
-      for (const [section, apps] of Object.entries(SERVICES)) {
-        const visibleApps = apps.filter(app => visibility[app.id] !== false);
-        if (visibleApps.length === 0) continue;
-        const appsHTML = visibleApps.map(renderApp).join('');
-        container.innerHTML += `
-            <div class="section">
-              <h2 class="section-title">${section}</h2>
-              <div class="container">${appsHTML}</div>
-            </div>`;
-      }
-    }
+        // Attach event handler to close settings when overlay is clicked
+        document
+          .getElementById("settingsOverlay")
+          .addEventListener("click", closeSettings);
 
-    function renderSettings() {
-      const visibility = loadVisibility();
-      const panel = document.getElementById('settingsPanel');
-      panel.innerHTML = '';
+        // Attempt to open a service using a deeplink
+        // Falls back to an intent if the deeplink does not trigger (i.e. no blur event occurs)
+        const tryOpenDeeplink = (scheme, path, packageName, fallbackUrl) => {
+          const timeout = 1500;
+          let didBlur = false;
 
-      for (const apps of Object.values(SERVICES)) {
-        for (const app of apps) {
-          const checked = visibility[app.id] !== false ? 'checked' : '';
-          panel.innerHTML += `
-              <label>
-                <input type="checkbox" data-id="${app.id}" ${checked} onchange="onToggleService(this)">
-                ${app.name}
-              </label>`;
-        }
-      }
-    }
+          const onBlur = () => {
+            didBlur = true;
+            window.removeEventListener("blur", onBlur);
+          };
 
-    function onToggleService(input) {
-      const visibility = loadVisibility();
-      visibility[input.dataset.id] = input.checked;
-      saveVisibility(visibility);
-      renderSections();
-    }
+          window.addEventListener("blur", onBlur);
 
-    renderSections();
-    renderSettings();
-  </script>
-</body>
+          // Create a hidden anchor element to trigger the deeplink
+          const link = document.createElement("a");
+          link.href = `${scheme}://${path}`;
+          link.style.display = "none";
+          document.body.appendChild(link);
+          link.click();
+
+          setTimeout(() => {
+            window.removeEventListener("blur", onBlur);
+            if (!didBlur) {
+              const action = "android.intent.action.VIEW";
+              const fallback = `S.browser_fallback_url=${encodeURIComponent(fallbackUrl)}`;
+              window.location.href = `intent://#Intent;action=${action};scheme=${scheme};package=${packageName};${fallback};end`;
+            }
+          }, timeout);
+        };
+
+        // Render a single application as a clickable button
+        const renderApp = (app) => `
+          <a class="app-button" onclick="tryOpenDeeplink('${app.scheme}', '${app.path}', '${app.package}', '${app.fallbackUrl}')" data-id="${app.id}">
+            <img src="${app.icon}" alt="${app.name}" class="app-icon" />
+            ${app.name}
+          </a>
+        `;
+
+        // Render sections with services (main user interface)
+        const renderSections = () => {
+          const visibility = loadVisibility();
+          const container = document.getElementById("sections");
+          container.innerHTML = "";
+
+          Object.entries(SERVICES).forEach(([sectionName, apps]) => {
+            let visibleApps = apps.filter((app) =>
+              isAppVisible(app, visibility)
+            );
+            visibleApps = sortApps(visibleApps);
+            if (visibleApps.length === 0) return;
+
+            const appsHTML = visibleApps.map(renderApp).join("");
+            container.innerHTML += `
+              <div class="section">
+                <h2 class="section-title">${sectionName}</h2>
+                <div class="container">${appsHTML}</div>
+              </div>
+            `;
+          });
+        };
+
+        // Render the settings panel – a list of checkboxes with buttons for changing order
+        const renderSettings = () => {
+          const visibility = loadVisibility();
+          const panel = document.getElementById("settingsPanel");
+          panel.innerHTML = "";
+
+          // Gather all services into a single array and sort them by the saved order
+          let allApps = Object.values(SERVICES).flat();
+          allApps = sortApps(allApps);
+
+          // Retrieve the saved order to determine positions
+          const order = loadOrder();
+
+          allApps.forEach((app, index) => {
+            // If the application is not present in the order, add it to the end
+            if (order.indexOf(app.id) === -1) order.push(app.id);
+
+            // Disable the up/down buttons if the element is at the beginning or at the end
+            const upDisabled = index === 0 ? "disabled" : "";
+            const downDisabled = index === allApps.length - 1 ? "disabled" : "";
+
+            panel.innerHTML += `
+              <div class="setting-item" data-id="${app.id}">
+                <label>
+                  <input type="checkbox" data-id="${app.id}" ${isAppVisible(app, visibility) ? "checked" : ""} onchange="onToggleService(this)">
+                  ${app.name}
+                </label>
+                <div class="order-controls">
+                  <button ${upDisabled} onclick="moveService('${app.id}', 'up')">↑</button>
+                  <button ${downDisabled} onclick="moveService('${app.id}', 'down')">↓</button>
+                </div>
+              </div>
+            `;
+          });
+
+          // Save the updated order if new elements have been added
+          saveOrder(order);
+        };
+
+        // Handler for toggling a service's visibility
+        const onToggleService = (input) => {
+          const visibility = loadVisibility();
+          visibility[input.dataset.id] = input.checked;
+          saveVisibility(visibility);
+          renderSections();
+        };
+
+        // Change the order of services by moving an element up or down
+        const moveService = (id, direction) => {
+          let order = loadOrder();
+          const index = order.indexOf(id);
+          if (index === -1) return; // Safeguard
+
+          if (direction === "up" && index > 0) {
+            [order[index - 1], order[index]] = [order[index], order[index - 1]];
+          } else if (direction === "down" && index < order.length - 1) {
+            [order[index], order[index + 1]] = [order[index + 1], order[index]];
+          }
+          saveOrder(order);
+          renderSettings();
+          renderSections();
+        };
+
+        // Initialize the interface
+        const initializeInterface = () => {
+          renderSections();
+          renderSettings();
+        };
+
+        // Expose functions to the global scope for inline event handlers
+        window.toggleSettings = toggleSettings;
+        window.tryOpenDeeplink = tryOpenDeeplink;
+        window.onToggleService = onToggleService;
+        window.moveService = moveService;
+
+        // Run initialization when the script loads
+        initializeInterface();
+      })();
+    </script>
+  </body>
 </html>

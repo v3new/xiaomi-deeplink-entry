@@ -138,8 +138,8 @@ body {
     width: 280px;
     height: 100vh;
     background-color: var(--card-color);
-    border-left: 1px solid #333;
-    padding: 24px 16px;
+    border-left: 1px solid #2a2f51;
+    padding: 24px 16px 100px 16px;
     box-sizing: border-box;
     transition: right 0.3s ease;
     z-index: 102;
@@ -153,18 +153,29 @@ body {
     right: 0;
 }
 
+.setting-item {
+    display: flex;
+    align-items: center;
+}
+
 .settings-panel label {
     display: flex;
+    flex: 1;
     align-items: center;
     gap: 12px;
     font-size: 16px;
     padding: 12px;
+    margin-right: 6px;
     border-radius: var(--radius);
-    background-color: #2a2f38;
+    background-color: var(--btn-color);
     cursor: pointer;
 }
 
 .settings-panel input[type="checkbox"] {
     width: 20px;
     height: 20px;
+}
+
+.order-controls {
+    opacity: 0.6;
 }
