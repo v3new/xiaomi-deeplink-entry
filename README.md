@@ -17,6 +17,8 @@ Imagine your apps blending so seamlessly with your system that they feel built-i
 3. **Navigate** to [https://v3new.github.io/xiaomi-deeplink-entry/](https://v3new.github.io/xiaomi-deeplink-entry/) to access your installed apps instantly  
 4. **Enjoy** the integrated experience
 
+![IMG_0321](https://github.com/user-attachments/assets/d0b28a69-2240-4b56-bafa-63ed1e524bb9)
+
 ## Supported Apps at a Glance 🎉
 
 Explore our curated collection of apps organized into categories for your convenience
