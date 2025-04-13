@@ -14,7 +14,7 @@ Imagine your apps blending so seamlessly with your system that they feel built-i
 
 1. **Connect** your Xiaomi device running HyperOS on Chinese firmware to your car using Hyper Connect  
 2. **Launch Chrome** and cast the browser to your car’s display  
-3. **Navigate** to [https://v3new.github.io/xiaomi-deeplink-entry/](https://v3new.github.io/xiaomi-deeplink-entry/) to access your installed apps instantly  
+3. **Navigate** to [https://v3new.github.io/xiaomi-deeplink-entry/](https://v3new.github.io/xiaomi-deeplink-entry/)  
 4. **Enjoy** the integrated experience
 
 ![IMG_0321](https://github.com/user-attachments/assets/d0b28a69-2240-4b56-bafa-63ed1e524bb9)
