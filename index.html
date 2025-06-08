@@ -14,6 +14,19 @@
   <body>
     <div class="settings-overlay" id="settingsOverlay"></div>
     <div class="wrapper">
+      <div id="infoBlock" class="section info-block">
+        <div class="clock-area">
+          <div id="clockTime" class="clock-time"></div>
+          <div id="clockDate" class="clock-date"></div>
+        </div>
+        <div class="weather-area">
+          <div id="weatherCurrent" class="weather-current">
+            <img id="weatherIcon" class="weather-icon" alt="weather" />
+            <span id="weatherTemp" class="weather-temp"></span>
+          </div>
+          <div id="weatherForecast" class="weather-forecast"></div>
+        </div>
+      </div>
       <div id="sections"></div>
       <div class="settings-panel" id="settingsPanel"></div>
       <div class="footer">
@@ -217,6 +230,66 @@
           renderSections();
         };
 
+        // Update clock display
+        const updateClock = () => {
+          const now = new Date();
+          const timeStr = now.toLocaleTimeString('ru-RU', {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+          const dateStr = now.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            weekday: 'long',
+          });
+          document.getElementById('clockTime').textContent = timeStr;
+          document.getElementById('clockDate').textContent = dateStr;
+        };
+
+        // Map weather data to DOM
+        const updateWeather = (data) => {
+          const current = data.current_weather;
+          const hourlyTimes = data.hourly.time;
+          const tempArr = data.hourly.temperature_2m;
+          const codeArr = data.hourly.weathercode;
+
+          document.getElementById('weatherTemp').textContent =
+            Math.round(current.temperature) + '°';
+          document.getElementById('weatherIcon').src =
+            `https://open-meteo.com/images/weather-icons/${current.weathercode}.png`;
+
+          const nowIndex = hourlyTimes.indexOf(current.time);
+          let forecastHTML = '';
+          for (let i = 1; i <= 12; i++) {
+            const idx = nowIndex + i;
+            if (idx >= hourlyTimes.length) break;
+            const date = new Date(hourlyTimes[idx]);
+            const time = date.toLocaleTimeString('ru-RU', { hour: '2-digit' });
+            const t = Math.round(tempArr[idx]);
+            const code = codeArr[idx];
+            forecastHTML += `<div class="hour"><img src="https://open-meteo.com/images/weather-icons/${code}.png" alt=""/><span>${time}</span><span>${t}°</span></div>`;
+          }
+          document.getElementById('weatherForecast').innerHTML = forecastHTML;
+        };
+
+        const fetchWeather = (lat, lon) => {
+          const url =
+            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode&forecast_days=1&timezone=Europe%2FMoscow`;
+          fetch(url)
+            .then((r) => r.json())
+            .then(updateWeather)
+            .catch((e) => console.error('Weather error', e));
+        };
+
+        const initWeather = () => {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+              (err) => console.error('Geolocation error', err),
+            );
+          }
+        };
+
         // Change the order of services by moving an element up or down
         const moveService = (id, direction) => {
           let order = loadOrder();
@@ -237,6 +310,9 @@
         const initializeInterface = () => {
           renderSections();
           renderSettings();
+          updateClock();
+          setInterval(updateClock, 60000);
+          initWeather();
         };
 
         // Expose functions to the global scope for inline event handlers

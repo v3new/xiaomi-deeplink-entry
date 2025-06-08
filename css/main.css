@@ -214,3 +214,65 @@ body {
 .links a.xiaomi-enthusiasts {
 
 }
+
+/* Clock and Weather block */
+.info-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 80px;
+}
+
+.clock-time {
+    font-size: 32px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.clock-date {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.weather-area {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.weather-current {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.weather-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.weather-temp {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.weather-forecast {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.weather-forecast .hour {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+}
+
+.weather-forecast .hour img {
+    width: 20px;
+    height: 20px;
+}
