@@ -245,16 +245,16 @@ body {
 }
 
 .weather-location {
-    font-size: 14px;
+    font-size: 12px;
     display: flex;
     align-items: center;
-    gap: 4px;
-    margin-bottom: 4px;
+    gap: 5px;
+    margin-bottom: 8px;
 }
 
 .status-dot {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
 }
 
@@ -262,10 +262,11 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .weather-icon {
+    margin: -10px 0;
     width: 48px;
     height: 48px;
     display: none;
@@ -278,7 +279,7 @@ body {
 
 .weather-forecast {
     display: flex;
-    gap: 6px;
+    gap: 5px;
     flex-wrap: wrap;
     justify-content: flex-end;
 }
@@ -287,7 +288,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 10px;
+    font-size: 9px;
 }
 
 .weather-forecast .hour img {
