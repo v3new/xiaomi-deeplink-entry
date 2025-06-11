@@ -38,6 +38,7 @@
     const hourlyTimes = data.hourly.time;
     const tempArr = data.hourly.temperature_2m;
     const codeArr = data.hourly.weathercode;
+    const dayArr = data.hourly.is_day || [];
 
     document.getElementById('weatherTemp').textContent =
       Math.round(current.temperature) + '°';
@@ -61,7 +62,10 @@
       const t = Math.floor(tempArr[idx]);
       const code = codeArr[idx];
       const icon = ICON_MAP[code];
-      const name = icon ? icon.day : '0d';
+      const isDay = dayArr[idx] !== undefined
+        ? dayArr[idx] === 1
+        : date.getHours() >= 7 && date.getHours() <= 20;
+      const name = icon ? (isDay ? icon.day : icon.night) : '0d';
       forecastHTML += `<div class="hour"><img src="https://raw.githubusercontent.com/engperini/open-meteo-icons/main/icons/${name}.png" alt=""/><span>${time}</span><span>${t}°</span></div>`;
     });
     document.getElementById('weatherForecast').innerHTML = forecastHTML;
@@ -72,7 +76,7 @@
 
   const fetchWeather = (lat, lon, store = true) => {
     const url =
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode&forecast_days=2&timezone=auto`;
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode,is_day&forecast_days=2&timezone=auto`;
     fetch(url)
       .then((r) => r.json())
       .then((d) => updateWeather(d, store))
