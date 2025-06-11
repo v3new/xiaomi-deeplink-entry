@@ -8,7 +8,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Xiaomi DeepLink Entry</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500&display=swap" rel="stylesheet" />
     <link href="css/main.css?v=202504130359" rel="stylesheet" />
     <script src="data/services.js?v=202504130359"></script>
   </head>
@@ -26,7 +26,7 @@
             <span id="weatherPlace"></span>
           </div>
           <div id="weatherCurrent" class="weather-current">
-            <img id="weatherIcon" class="weather-icon" alt="weather" />
+            <img id="weatherIcon" class="weather-icon" alt="" />
             <span id="weatherTemp" class="weather-temp"></span>
           </div>
           <div id="weatherForecast" class="weather-forecast"></div>
@@ -242,7 +242,7 @@
             hour: '2-digit',
             minute: '2-digit',
           });
-          const dateStr = now.toLocaleDateString('ru-RU', {
+          const dateStr = now.toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'long',
             weekday: 'long',
@@ -289,12 +289,12 @@
           const tempArr = data.hourly.temperature_2m;
           const codeArr = data.hourly.weathercode;
 
-          document.getElementById("weatherTemp").textContent =
-            Math.round(current.temperature) + "°";
+          document.getElementById("weatherTemp").textContent = Math.round(current.temperature) + "°";
           const curIcon = ICON_MAP[current.weathercode];
           const curName = curIcon ? (current.is_day ? curIcon.day : curIcon.night) : "0d";
           document.getElementById("weatherIcon").src =
             `https://raw.githubusercontent.com/engperini/open-meteo-icons/main/icons/${curName}.png`;
+          document.getElementById("weatherIcon").style.display = "block"
 
           const nowIndex = hourlyTimes.indexOf(current.time);
           let forecastHTML = '';
@@ -351,7 +351,7 @@
         };
 
         const initWeather = () => {
-          const useMoscow = () => {
+          const useDefault = () => {
             const lat = 55.7558;
             const lon = 37.6176;
             updateLocation('Moscow', 'orange');
@@ -363,17 +363,23 @@
               async (pos) => {
                 const lat = pos.coords.latitude;
                 const lon = pos.coords.longitude;
-                const name = await fetchLocationName(lat, lon);
-                updateLocation(name, 'limegreen');
-                fetchWeather(lat, lon);
+                fetchLocationName(lat, lon).then((name) => {
+                  updateLocation(name, 'green');
+                })
+                fetchWeather(lat, lon)
               },
               () => {
                 console.error('Geolocation error');
-                useMoscow();
+                useDefault();
+              },
+              {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
               }
             );
           } else {
-            useMoscow();
+            useDefault();
           }
         };
 
@@ -395,11 +401,12 @@
 
         // Initialize the interface
         const initializeInterface = () => {
+          updateClock();
           renderSections();
           renderSettings();
-          updateClock();
-          setInterval(updateClock, 60000);
           initWeather();
+          
+          setInterval(updateClock, 6000);
         };
 
         // Expose functions to the global scope for inline event handlers

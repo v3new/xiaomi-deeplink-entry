@@ -220,18 +220,20 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 153px;
+    height: 116px;
+    background-color: unset;
 }
 
 .clock-time {
-    font-size: 64px;
-    font-weight: bold;
+    font-size: 56px;
+    font-optical-sizing: auto;
+    font-weight: 500;
     line-height: 1;
-    font-family: "Orbitron", sans-serif;
+    font-family: "Space Grotesk", sans-serif;
 }
 
 .clock-date {
-    font-size: 12px;
+    font-size: 16px;
     opacity: 0.7;
 }
 
@@ -266,10 +268,11 @@ body {
 .weather-icon {
     width: 48px;
     height: 48px;
+    display: none;
 }
 
 .weather-temp {
-    font-size: 24px;
+    font-size: 36px;
     font-weight: 600;
 }
 
