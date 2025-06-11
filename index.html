@@ -269,12 +269,12 @@
           renderSections();
         };
 
-        // Reload the page if there is no interaction for 10 minutes
+        // Reload the page if there is no interaction for 5 minutes
         const setupAutoReload = () => {
           let timer;
           const reset = () => {
             clearTimeout(timer);
-            timer = setTimeout(() => location.reload(), 10 * 60 * 1000);
+            timer = setTimeout(() => location.reload(), 5 * 60 * 1000);
           };
           ['click', 'mousemove', 'keydown', 'touchstart'].forEach((e) =>
             document.addEventListener(e, reset)
@@ -289,7 +289,7 @@
           renderSettings();
           initWeather();
 
-          setInterval(updateClock, 6000);
+          setInterval(updateClock, 5000);
           setupAutoReload();
         };
 

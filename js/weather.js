@@ -91,7 +91,7 @@
       );
       const data = await resp.json();
       const addr = data.address || {};
-      return addr.city || addr.town || addr.village || addr.county || '';
+      return addr.suburb || addr.city || addr.town || addr.village || addr.county || '';
     } catch (e) {
       console.error('Reverse geocode error', e);
       return '';
@@ -124,7 +124,7 @@
     } else {
       loc = { lat: 55.7558, lon: 37.6176, name: 'Moscow' };
       updateLocation(loc.name, 'orange');
-      fetchWeather(loc.lat, loc.lon, false);
+      fetchWeather(loc.lat, loc.lon, true);
     }
 
     if (navigator.geolocation) {
