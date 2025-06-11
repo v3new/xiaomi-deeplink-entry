@@ -8,6 +8,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Xiaomi DeepLink Entry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet" />
     <link href="css/main.css?v=202504130359" rel="stylesheet" />
     <script src="data/services.js?v=202504130359"></script>
   </head>
@@ -297,23 +298,27 @@
 
           const nowIndex = hourlyTimes.indexOf(current.time);
           let forecastHTML = '';
-          for (let i = 1; i <= 12; i++) {
-            const idx = nowIndex + i;
-            if (idx >= hourlyTimes.length) break;
+          const OFFSETS = [3, 6, 12, 24];
+          OFFSETS.forEach((hrs) => {
+            const idx = nowIndex + hrs;
+            if (idx >= hourlyTimes.length) return;
             const date = new Date(hourlyTimes[idx]);
-            const time = date.toLocaleTimeString('ru-RU', { hour: '2-digit' });
-            const t = Math.round(tempArr[idx]);
+            const time = date.toLocaleTimeString('ru-RU', {
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+            const t = Math.floor(tempArr[idx]);
             const code = codeArr[idx];
             const icon = ICON_MAP[code];
             const name = icon ? icon.day : '0d';
             forecastHTML += `<div class="hour"><img src="https://raw.githubusercontent.com/engperini/open-meteo-icons/main/icons/${name}.png" alt=""/><span>${time}</span><span>${t}°</span></div>`;
-          }
+          });
           document.getElementById('weatherForecast').innerHTML = forecastHTML;
         };
 
         const fetchWeather = (lat, lon) => {
           const url =
-            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode&forecast_days=1&timezone=Europe%2FMoscow`;
+            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode&forecast_days=2&timezone=auto`;
           fetch(url)
             .then((r) => r.json())
             .then(updateWeather)
