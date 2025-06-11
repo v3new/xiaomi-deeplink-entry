@@ -220,13 +220,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    min-height: 80px;
+    height: 153px;
 }
 
 .clock-time {
-    font-size: 32px;
+    font-size: 64px;
     font-weight: bold;
     line-height: 1;
+    font-family: "Courier New", monospace;
 }
 
 .clock-date {
@@ -239,6 +240,20 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+}
+
+.weather-location {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
 }
 
 .weather-current {
