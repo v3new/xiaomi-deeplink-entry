@@ -38,7 +38,7 @@ const SERVICES = {
       fallbackUrl: 'https://open.spotify.com',
       icon: 'https://play-lh.googleusercontent.com/7ynvVIRdhJNAngCg_GI7i8TtH8BqkJYmffeUHsG-mJOdzt1XLvGmbsKuc5Q1SInBjDKN=s64-rw',
       showOnLaunch: true,
-    }
+    },
   ],
   navigation: [
     {
@@ -88,7 +88,7 @@ const SERVICES = {
       fallbackUrl: 'https://www.waze.com',
       icon: 'https://play-lh.googleusercontent.com/r7XL36PVNtnidqy6ikRiW1AHEIsjhePrZ8W5M4cNTQy5ViF3-lIDY47hpvxc84kJ7lw=s64-rw',
       showOnLaunch: true,
-    }
+    },
   ],
   communication: [
     {
@@ -123,7 +123,7 @@ const SERVICES = {
       fallbackUrl: 'https://alice.yandex.ru',
       icon: 'https://play-lh.googleusercontent.com/EJpCCkNQrYAyD4NdTcWUe-RSdr1LGTz9ya6FQ1Q-H9RLRdhdg85_oHgHNrWxNiCVgcVD=w480-h960-rw',
       showOnLaunch: true,
-    }
+    },
   ],
   entertainment: [
     {
@@ -181,7 +181,7 @@ const SERVICES = {
       package: 'ru.ivi.client',
       fallbackUrl: 'https://ivi.ru',
       icon: 'https://play-lh.googleusercontent.com/GKBFhzd6BuA_gx5z51INJ_shZxWh1rqbkUcDBIZURe0iVArMC66wA3O4YM2F8Yql_1g=s64-rw',
-    }
+    },
   ],
   messengers: [
     {
@@ -229,6 +229,6 @@ const SERVICES = {
       path: '',
       fallbackUrl: 'https://vk.com',
       icon: 'https://play-lh.googleusercontent.com/GntsGclzheXXASOhjSF1lCOPOznM_OARDObiTW_NQZtpYVwPQr_0ARyRyiXB0_OocmI=s64-rw',
-    }
-  ]
-};
+    },
+  ],
+}

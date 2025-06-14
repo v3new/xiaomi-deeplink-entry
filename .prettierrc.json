@@ -1,0 +1,44 @@
+{
+  "arrowParens": "avoid",
+  "bracketSameLine": true,
+  "bracketSpacing": false,
+  "endOfLine": "auto",
+  "jsxSingleQuote": false,
+  "printWidth": 120,
+  "quoteProps": "as-needed",
+  "semi": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "useTabs": false,
+  "plugins": [],
+  "overrides": [
+    {
+      "files": [
+        "*.js",
+        "*.jsx",
+        "*.ts",
+        "*.tsx"
+      ],
+      "options": {
+        "parser": "babel-ts"
+      }
+    },
+    {
+      "files": [
+        "*.css"
+      ],
+      "options": {
+        "parser": "css"
+      }
+    },
+    {
+      "files": [
+        "*.json"
+      ],
+      "options": {
+        "parser": "json-stringify"
+      }
+    }
+  ]
+}
