@@ -63,7 +63,7 @@ const Device = (() => {
       {
         enableHighAccuracy: true,
         maximumAge: 1000,
-        timeout: 5000,
+        timeout: 10000,
       },
     )
   }
