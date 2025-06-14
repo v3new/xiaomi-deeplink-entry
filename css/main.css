@@ -35,7 +35,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: start;
-    padding-top: 20px;
+    padding-top: 60px;
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
@@ -295,3 +295,72 @@ body {
     width: 20px;
     height: 20px;
 }
+/* Status bar */
+.status-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background-color: var(--card-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 14px;
+    z-index: 200;
+}
+
+.status-bar span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Debug toggle button */
+.debug-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: var(--card-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    z-index: 120;
+    cursor: pointer;
+}
+
+.debug-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.5);
+    display: none;
+    z-index: 119;
+}
+
+.debug-overlay.active { display: block; }
+
+.debug-panel {
+    position: fixed;
+    left: 0;
+    bottom: -100%;
+    width: 100vw;
+    max-height: 70vh;
+    background-color: var(--card-color);
+    padding: 16px;
+    overflow-y: auto;
+    transition: bottom 0.3s ease;
+    z-index: 120;
+    box-sizing: border-box;
+}
+
+.debug-panel.open { bottom: 0; }
+
+.debug-panel .debug-section { margin-bottom: 12px; }
+.debug-panel .debug-timestamp { font-size: 12px; opacity: 0.6; margin-top: 8px; }
