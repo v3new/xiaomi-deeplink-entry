@@ -1,3 +1,15 @@
+@property --size {
+  syntax: '<length>';
+  initial-value: 18px;
+  inherits: false;
+}
+
+@property --speed {
+  syntax: '<time>';
+  initial-value: 35s;
+  inherits: false;
+}
+
 :root {
   --size: 18px;
   --speed: 35s;
@@ -27,6 +39,10 @@
     url('../images/noise-mask.png') 256px 50% / 256px 256px;
   mask-composite: intersect;
   animation: flicker var(--speed) infinite linear;
+
+  transition:
+    --size 0.2s linear,
+    --speed 0.2s linear;
 }
 
 @keyframes flicker {
