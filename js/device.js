@@ -73,11 +73,7 @@ const Device = (() => {
     cb(lastData)
     if (!watching) {
       watching = true
-      if ('geolocation' in navigator) {
-        startNativeWatch()
-      } else {
-        startFallback()
-      }
+      startNativeWatch()
     }
   }
 
