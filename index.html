@@ -12,9 +12,12 @@
     <link href="css/main.css?v=202506150001" rel="stylesheet" />
     <script src="data/services.js?v=202506150001"></script>
     <script src="js/weather.js?v=202506150001"></script>
+    <script src="js/system.js?v=202506150001"></script>
   </head>
   <body>
+    <div id="statusBar" class="status-bar"></div>
     <div class="settings-overlay" id="settingsOverlay"></div>
+    <div id="debugOverlay" class="debug-overlay" onclick="toggleDebug()"></div>
     <div class="wrapper">
       <div id="infoBlock" class="section info-block">
         <div class="clock-area">
@@ -45,6 +48,12 @@
         </div>
       </div>
     </div>
+    <div id="debugPanel" class="debug-panel">
+      <div id="debugContent"></div>
+      <button onclick="refreshDebug()">Refresh</button>
+      <div id="debugTimestamp" class="debug-timestamp"></div>
+    </div>
+    <div class="debug-toggle" onclick="toggleDebug()">⚙️</div>
 
     <script>
       (function () {
