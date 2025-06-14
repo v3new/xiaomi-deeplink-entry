@@ -1,0 +1,36 @@
+:root {
+  --size: 13px;
+  --speed: 0;
+
+  --stop1: #eec32d;
+  --stop2: #ec4b4b;
+  --stop3: #709ab9;
+  --stop4: #4dffbf;
+}
+
+.stars {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient(
+    from 180deg at 50% 70%,
+    hsla(0,0%,98%,1) 0deg,
+    var(--stop1) 72deg,
+    var(--stop2) 144deg,
+    var(--stop3) 216deg,
+    var(--stop4) 288deg,
+    hsla(0,0%,98%,1) 1turn
+  );
+  mask: radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px)
+          50% 50% / var(--size) var(--size),
+        url("/images/noise-mask.png") 256px 50% / 256px 256px;
+  mask-composite: intersect;
+  animation: flicker 35s infinite linear;
+}
+
+@keyframes flicker {
+  to {
+    mask-position: 50% 50%, 0 50%;
+  }
+}
