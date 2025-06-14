@@ -61,26 +61,13 @@ function updateSpeed(speedKmh) {
   root.style.setProperty('--speed', `${duration.toFixed(2)}s`)
 }
 
-// 3) Следим за геолокацией
-if ('geolocation' in navigator) {
-  navigator.geolocation.watchPosition(
-    pos => {
-      let v = pos.coords.speed // м/с
-      if (v === null || isNaN(v)) v = 0 // если недоступно — считаем 0
-      const kmh = v * 3.6
-      updateSpeed(kmh)
-    },
-    err => {
-      console.warn('Geo error:', err.message)
-      updateSpeed(0)
-    },
-    {
-      enableHighAccuracy: true,
-      maximumAge: 1000,
-      timeout: 5000,
-    },
-  )
+// 3) Следим за геолокацией через обёртку Device
+if (window.Device && Device.watchLocation) {
+  Device.watchLocation(data => {
+    const kmh = data.speed
+    updateSpeed(kmh)
+  })
 } else {
-  console.warn('Geolocation API not supported')
+  console.warn('Device API not available')
   updateSpeed(0)
 }

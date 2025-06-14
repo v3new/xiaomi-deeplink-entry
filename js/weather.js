@@ -125,23 +125,30 @@
       fetchWeather(loc.lat, loc.lon, true)
     }
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async pos => {
-          const lat = pos.coords.latitude
-          const lon = pos.coords.longitude
+    let lastNameTs = 0
+    let lastWeatherTs = 0
+
+    if (window.Device && Device.watchLocation) {
+      Device.watchLocation(async pos => {
+        const now = Date.now()
+        const lat = pos.lat
+        const lon = pos.lon
+
+        if (now - lastNameTs > 3 * 60 * 1000) {
           const name = await fetchLocationName(lat, lon)
           updateLocation(name, 'green')
+          localStorage.setItem(
+            LOCATION_KEY,
+            JSON.stringify({lat, lon, name}),
+          )
+          lastNameTs = now
+        }
+
+        if (now - lastWeatherTs > 5 * 60 * 1000) {
           fetchWeather(lat, lon, true)
-          localStorage.setItem(LOCATION_KEY, JSON.stringify({lat, lon, name}))
-        },
-        () => {},
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
-        },
-      )
+          lastWeatherTs = now
+        }
+      })
     }
   }
 
