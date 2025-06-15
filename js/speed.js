@@ -1,5 +1,7 @@
 function updateSpeed(speedKmh) {
   const root = document.documentElement
+  const stars = document.querySelector('.stars')
+  const containerWidth = stars.parentElement.clientWidth
 
   const originals = ['#eec32d', '#ec4b4b', '#709ab9', '#4dffbf'].map(hexToRgb)
   const greenTarget = hexToRgb('#4dffbf')
@@ -32,6 +34,11 @@ function updateSpeed(speedKmh) {
   const pSpeed = pSize
   const duration = 35 - 23 * pSpeed
   root.style.setProperty('--speed', `${duration.toFixed(2)}s`)
+
+  // 4. Вычисляем долю ширины (0…1 при 0…100 км/ч)
+  const pWidth = Math.min(speedKmh, 100) / 100
+  const widthPx = 220 + (containerWidth - 220) * pWidth
+  stars.style.width = `${widthPx.toFixed(2)}px`
 }
 
 if (window.Device && Device.watchLocation) {

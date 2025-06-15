@@ -23,7 +23,7 @@
 .stars {
   position: absolute;
   inset: 0;
-  width: 100%;
+  width: 220px;
   height: 100%;
   background: conic-gradient(
     from 180deg at 50% 70%,
@@ -41,6 +41,7 @@
   animation: flicker var(--speed) infinite linear;
 
   transition:
+    width 0.5s linear,
     --size 0.2s linear,
     --speed 0.2s linear;
 }

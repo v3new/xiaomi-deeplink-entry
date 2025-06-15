@@ -37,7 +37,7 @@ const Device = (() => {
       watchId = null
     }
     if (!fakeInterval) {
-      fakeInterval = setInterval(stepFake, 1000)
+      fakeInterval = setInterval(stepFake, 500)
       // send first data immediately
       notify({ ...fallbackCoords, speed: fakeSpeed })
     }
