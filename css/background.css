@@ -23,7 +23,7 @@
 .stars {
   position: absolute;
   inset: 0;
-  width: 220px;
+  width: 211px;
   height: 100%;
   background: conic-gradient(
     from 180deg at 50% 70%,

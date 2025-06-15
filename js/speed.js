@@ -36,8 +36,9 @@ function updateSpeed(speedKmh) {
   root.style.setProperty('--speed', `${duration.toFixed(2)}s`)
 
   // 4. Вычисляем долю ширины (0…1 при 0…100 км/ч)
-  const pWidth = Math.min(speedKmh, 100) / 100
-  const widthPx = 220 + (containerWidth - 220) * pWidth
+  const normilizeSpeed = Math.max(speedKmh, 10) - 10
+  const pWidth = Math.min(normilizeSpeed, 100) / 100
+  const widthPx = 211 + (containerWidth - 211) * pWidth
   stars.style.width = `${widthPx.toFixed(2)}px`
 }
 

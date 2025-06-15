@@ -36,18 +36,15 @@ const Device = (() => {
       navigator.geolocation.clearWatch(watchId)
       watchId = null
     }
-    if (!fakeInterval) {
-      fakeInterval = setInterval(stepFake, 500)
-      // send first data immediately
-      notify({ ...fallbackCoords, speed: fakeSpeed })
-    }
+    notify({ ...fallbackCoords, speed: 0 })
+    // if (!fakeInterval) {
+    //   fakeInterval = setInterval(stepFake, 500)
+    //   // send first data immediately
+    //   notify({ ...fallbackCoords, speed: fakeSpeed })
+    // }
   }
 
   function startNativeWatch() {
-    if (!('geolocation' in navigator)) {
-      startFallback()
-      return
-    }
     watchId = navigator.geolocation.watchPosition(
       pos => {
         const lat = pos.coords.latitude
@@ -62,8 +59,8 @@ const Device = (() => {
       },
       {
         enableHighAccuracy: true,
-        maximumAge: 1000,
-        timeout: 10000,
+        maximumAge: 10000,
+        timeout: 60000,
       },
     )
   }
