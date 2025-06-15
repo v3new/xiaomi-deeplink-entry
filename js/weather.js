@@ -96,6 +96,19 @@
     }
   }
 
+  const EARTH_RADIUS_KM = 6371
+  const DIST_THRESHOLD_KM = 1
+  const MAX_UPDATES = 10
+  const WINDOW_MS = 10 * 60 * 1000
+
+  const distKm = (lat1, lon1, lat2, lon2) => {
+    const toRad = deg => (deg * Math.PI) / 180
+    const dLat = toRad(lat2 - lat1)
+    const dLon = toRad(lon2 - lon1)
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2
+    return 2 * EARTH_RADIUS_KM * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  }
+
   const initWeather = () => {
     // Show stored weather data first
     const storedW = localStorage.getItem(WEATHER_KEY)
@@ -125,29 +138,34 @@
       fetchWeather(loc.lat, loc.lon, true)
     }
 
-    let lastNameTs = 0
-    let lastWeatherTs = 0
+    let lastCoords = {lat: loc.lat, lon: loc.lon}
+    let updateTimes = []
 
     if (window.Device && Device.watchLocation) {
       Device.watchLocation(async pos => {
         const now = Date.now()
         const lat = pos.lat
         const lon = pos.lon
+        if (lat == null || lon == null || isNaN(lat) || isNaN(lon)) return
 
-        if (now - lastNameTs > 3 * 60 * 1000) {
+        if (lat === lastCoords.lat && lon === lastCoords.lon) return
+
+        const distance = distKm(lastCoords.lat, lastCoords.lon, lat, lon)
+        if (distance < DIST_THRESHOLD_KM) return
+
+        updateTimes = updateTimes.filter(ts => now - ts < WINDOW_MS)
+        if (updateTimes.length >= MAX_UPDATES) return
+
+        updateTimes.push(now)
+        lastCoords = {lat, lon}
+
+        try {
           const name = await fetchLocationName(lat, lon)
           updateLocation(name, 'green')
-          localStorage.setItem(
-            LOCATION_KEY,
-            JSON.stringify({lat, lon, name}),
-          )
-          lastNameTs = now
-        }
+          localStorage.setItem(LOCATION_KEY, JSON.stringify({lat, lon, name}))
+        } catch {}
 
-        if (now - lastWeatherTs > 5 * 60 * 1000) {
-          fetchWeather(lat, lon, true)
-          lastWeatherTs = now
-        }
+        fetchWeather(lat, lon, true)
       })
     }
   }
