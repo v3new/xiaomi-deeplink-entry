@@ -148,6 +148,8 @@
         const lon = pos.lon
         if (lat == null || lon == null || isNaN(lat) || isNaN(lon)) return
 
+        if (lat === lastCoords.lat && lon === lastCoords.lon) return
+
         const distance = distKm(lastCoords.lat, lastCoords.lon, lat, lon)
         if (distance < DIST_THRESHOLD_KM) return
 
