@@ -110,6 +110,14 @@ const SERVICES = {
       showOnLaunch: true,
     },
     {
+      id: 'perplexity',
+      name: 'Perplexity',
+      package: 'ai.perplexity.app.android',
+      scheme: 'perplexity',
+      fallbackUrl: 'https://perplexity.ai',
+      icon: 'https://play-lh.googleusercontent.com/6STp0lYx2ctvQ-JZpXA1LeAAZIlq6qN9gpy7swLPlRhmp-hfvZePcBxqwVkqN2BH1g=s64-rw',
+    },
+    {
       id: 'deepseek',
       name: 'DeepSeek',
       package: 'com.deepseek.chat',

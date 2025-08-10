@@ -7,6 +7,7 @@
   --text-color: #111;
   --secondary-color: #555;
   --radius: 16px;
+  --battery-color: #26c281;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -39,6 +40,18 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
+}
+
+.status-bar {
+  width: 100%;
+  max-width: 700px;
+  padding: 0 32px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  top: 12px;
 }
 
 .wrapper {
@@ -84,14 +97,21 @@ body {
   align-items: center;
   justify-content: center;
   transition:
-    transform 0.1s ease,
-    background-color 0.2s ease;
+  transform 0.1s ease,
+  background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.app-button:active,
-.app-button:hover {
+.app-button:active {
   transform: scale(1.06);
   background-color: rgb(40 94 231);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-button:hover {
+    transform: scale(1.06);
+    background-color: rgb(40 94 231);
+  }
 }
 
 .app-icon {
@@ -211,15 +231,11 @@ body {
   background-color: var(--accent-color);
 }
 
-.links a.idea-hub {
-}
-
-.links a.xiaomi-enthusiasts {
-}
-
-/* Clock and Weather block */
+/* Clock block */
 .info-block {
   display: flex;
+  margin-top: 15px;
+  margin-bottom: 5px;
   justify-content: space-between;
   align-items: center;
   height: 116px;
@@ -239,11 +255,19 @@ body {
   opacity: 0.7;
 }
 
+/* Weather block */
 .weather-area {
   text-align: right;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+}
+
+.geo-location {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .weather-location {
@@ -296,4 +320,60 @@ body {
 .weather-forecast .hour img {
   width: 20px;
   height: 20px;
+}
+
+/* Battery badge */
+.battery-area {
+  display: block;
+}
+
+.battery-badge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.battery-icon {
+  width: 42px;
+  height: 21px;
+  display: block;
+}
+
+.bat-bolt {
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  left: -26px;
+}
+
+.bat-text {
+  font-size: 6px;
+  fill: #fffffff2;
+}
+
+.bat-body {
+  fill: none;
+  stroke: var(--battery-color);
+  stroke-width: 1;
+}
+
+.bat-cap,
+.bat-fill {
+  fill: var(--battery-color);
+}
+
+.bat-bolt path {
+  fill: #ffb300;
+}
+
+/* Blink for critical state */
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.battery-badge.blink {
+  animation: blink 1s steps(2, start) infinite;
 }

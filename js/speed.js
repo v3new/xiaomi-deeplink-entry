@@ -42,12 +42,12 @@ function updateSpeed(speedKmh) {
   stars.style.width = `${widthPx.toFixed(2)}px`
 }
 
-if (window.Device && Device.watchLocation) {
-  Device.watchLocation(data => {
-    const kmh = data.speed
-    updateSpeed(kmh)
-  })
-} else {
-  console.warn('Device API not available')
-  updateSpeed(0)
-}
+// if (window.Device && Device.watchLocation) {
+//   Device.watchLocation(data => {
+//     const kmh = data.speed
+//     updateSpeed(kmh)
+//   })
+// } else {
+//   console.warn('Device API not available')
+//   updateSpeed(0)
+// }
