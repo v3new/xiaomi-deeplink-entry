@@ -78,20 +78,72 @@ function fmtTime(secs) {
   return h > 0 ? `${h}ч ${m}м` : `${m}м`
 }
 
+// Отложенный fallback для App-Link приложений: если приложение запустилось — вкладка
+// уходит в фон (visibilitychange/pagehide/blur), и мы отменяем переход. Если за ~1.4с
+// ничего не произошло (приложение не установлено / ссылка не поддержана) — открываем сайт.
+function scheduleFallback(url) {
+  let cancelled = false
+  const cancel = () => {
+    cancelled = true
+  }
+  const onVis = () => {
+    if (document.hidden) cancel()
+  }
+  document.addEventListener('visibilitychange', onVis, {once: true})
+  window.addEventListener('pagehide', cancel, {once: true})
+  window.addEventListener('blur', cancel, {once: true})
+
+  setTimeout(() => {
+    if (!cancelled && !document.hidden) window.location.href = url
+  }, 1400)
+}
+
 function tryOpenDeeplink(scheme, path, packageName, fallbackUrl) {
   const normalizedPath = (path || '').replace(/^\/+/, '')
   const hasScheme = Boolean(scheme)
   const hasPackage = Boolean(packageName)
 
   if (hasPackage) {
+    // Определяем схему и host/path для intent-ссылки.
+    //   • Есть кастомная схема (scheme) — используем её: scheme://<path>.
+    //     Так работают приложения, регистрирующие browsable-схему (tg, spotify, fb, weixin…).
+    //   • Схемы нет, но есть fallbackUrl — собираем intent на основе App Link (https://<домен>).
+    //     Android App Links имеют в манифесте category=BROWSABLE, поэтому Chrome МОЖЕТ запустить
+    //     приложение, если в intent явно указан package. Если приложение не установлено или
+    //     не регистрирует этот домен — Chrome просто откроет сайт (тот же S.browser_fallback_url).
+    //     Именно так запускаются ChatGPT, Claude, Gemini, Instagram и пр., у которых нет custom-схемы.
+    let intentScheme = scheme
+    let intentHostPath = normalizedPath
+    let isAppLink = false
+
+    if (!hasScheme && fallbackUrl) {
+      try {
+        const u = new URL(fallbackUrl)
+        intentScheme = u.protocol.replace(/:$/, '') // https
+        // host + путь. ВАЖНО: сохраняем хотя бы корневой "/", т.к. многие App-Link
+        // фильтры объявлены через pathPrefix="/" и НЕ матчат пустой путь
+        // (intent://chatgpt.com → не открывает, intent://chatgpt.com/ → открывает).
+        intentHostPath = (u.host + (u.pathname || '/') + u.search).replace(/\/{2,}$/, '/')
+        isAppLink = true
+      } catch (_) {
+        // невалидный URL — оставляем как есть (intent без схемы → откроется fallback)
+      }
+    }
+
     const intentParts = [
-      `intent://${normalizedPath}#Intent`,
-      hasScheme ? `scheme=${scheme}` : null,
+      `intent://${intentHostPath}#Intent`,
+      intentScheme ? `scheme=${intentScheme}` : null,
       `package=${packageName}`,
-      fallbackUrl ? `S.browser_fallback_url=${encodeURIComponent(fallbackUrl)}` : null,
+      // S.browser_fallback_url добавляем ТОЛЬКО для кастомных схем (data — не http(s)).
+      // Для App Link (data=https) встроенный fallback заставляет Chrome открыть сайт во
+      // вкладке ПОВЕРХ уже запущенного приложения («приложение открылось, и тут же браузер»).
+      // Поэтому для App Link используем отложенный JS-fallback ниже.
+      fallbackUrl && !isAppLink ? `S.browser_fallback_url=${encodeURIComponent(fallbackUrl)}` : null,
       'end',
     ]
     const intentUri = intentParts.filter(Boolean).join(';')
+
+    if (isAppLink && fallbackUrl) scheduleFallback(fallbackUrl)
     window.location.href = intentUri
     return
   }
@@ -106,83 +158,48 @@ function tryOpenDeeplink(scheme, path, packageName, fallbackUrl) {
 }
 
 function setupAutoReload() {
-  const RELOAD_AFTER_MS = 20 * 60 * 1000
-  const STORAGE_KEY_LAST_ACTIVE = 'auto_reload_last_active_ts'
+  // Через сколько простоя/зависания перезагружать страницу.
+  const RELOAD_AFTER_SEC = 30 * 60
 
-  let timeoutId = null
-  let intervalId = null
+  // Ключевая идея: используем НАТИВНЫЙ <meta http-equiv="refresh">, а не JS-таймеры.
+  // Браузер выполняет meta-refresh силами движка рендеринга, поэтому он сработает
+  // ДАЖЕ если JS-поток завис (а именно это и есть причина «застывшей» страницы,
+  // которую раньше приходилось обновлять вручную). На любое действие пользователя
+  // мы пересоздаём meta-тег и тем самым сбрасываем нативный таймер — так что
+  // во время активного использования перезагрузки не происходит.
 
-  const getLastActiveTs = () => {
-    const raw = localStorage.getItem(STORAGE_KEY_LAST_ACTIVE)
-    const parsed = raw ? parseInt(raw, 10) : NaN
-    return Number.isFinite(parsed) ? parsed : Date.now()
+  let metaEl = null
+
+  const armMetaRefresh = () => {
+    if (metaEl && metaEl.parentNode) metaEl.parentNode.removeChild(metaEl)
+    metaEl = document.createElement('meta')
+    metaEl.httpEquiv = 'refresh'
+    // content="<сек>; url=..." — перезагрузка текущего адреса
+    metaEl.content = `${RELOAD_AFTER_SEC}; url=${location.href}`
+    document.head.appendChild(metaEl)
   }
 
-  const setLastActiveTs = (ts = Date.now()) => {
-    try {
-      localStorage.setItem(STORAGE_KEY_LAST_ACTIVE, String(ts))
-    } catch (_) {
-      // ignore storage errors
-    }
-    return ts
-  }
-
-  const shouldReload = () => Date.now() - getLastActiveTs() >= RELOAD_AFTER_MS
-
-  const scheduleCheck = () => {
-    clearTimeout(timeoutId)
-    // Планируем следующий тик не реже, чем раз в минуту, чтобы обойти жёсткое троттлинг таймеров в фоне
-    const remaining = RELOAD_AFTER_MS - (Date.now() - getLastActiveTs())
-    const delay = Math.max(0, Math.min(60_000, remaining))
-    timeoutId = setTimeout(() => {
-      if (shouldReload()) {
-        location.reload()
-      } else {
-        scheduleCheck()
-      }
-    }, delay)
-  }
-
+  // Троттлим сброс, чтобы не дёргать DOM на каждое движение мыши.
+  let lastArm = 0
   const resetActivity = () => {
-    setLastActiveTs()
-    scheduleCheck()
+    const now = Date.now()
+    if (now - lastArm < 5_000) return
+    lastArm = now
+    armMetaRefresh()
   }
 
   ;['click', 'mousemove', 'keydown', 'touchstart', 'wheel', 'scroll'].forEach(eventName =>
     document.addEventListener(eventName, resetActivity, {passive: true}),
   )
 
-  // При возвращении к вкладке или восстановлении из BFCache — сразу проверяем и при необходимости перезагружаем
+  // При возврате к вкладке / восстановлении из BFCache переоружаем таймер.
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) {
-      if (shouldReload()) {
-        location.reload()
-      } else {
-        scheduleCheck()
-      }
-    }
+    if (!document.hidden) armMetaRefresh()
   })
+  window.addEventListener('pageshow', armMetaRefresh)
 
-  window.addEventListener('pageshow', () => {
-    if (shouldReload()) {
-      location.reload()
-    } else {
-      scheduleCheck()
-    }
-  })
-
-  // Доп. страховка: раз в минуту проверяем по реальному времени
-  intervalId = setInterval(() => {
-    if (shouldReload()) location.reload()
-  }, 60_000)
-
-  // Отчистка при уходе со страницы
-  window.addEventListener('pagehide', () => {
-    clearTimeout(timeoutId)
-    clearInterval(intervalId)
-  })
-
-  resetActivity()
+  // Первичная установка таймера.
+  armMetaRefresh()
 }
 
 window.loadVisibility = loadVisibility
