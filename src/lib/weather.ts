@@ -73,15 +73,17 @@ export type WeatherState = {
   iconUrl: string
   locationColor: string
   locationName: string
+  statusText: string
   temperature: string
 }
 
 export const weatherState = writable<WeatherState>({
   forecast: [],
-  iconUrl: '',
+  iconUrl: weatherIconUrl(2, true),
   locationColor: 'orange',
   locationName: '',
-  temperature: '',
+  statusText: 'Loading',
+  temperature: '--°',
 })
 
 function readStorage(key: string): string | null {
@@ -238,7 +240,7 @@ function buildWeatherState(data: WeatherData): Pick<WeatherState, 'forecast' | '
 }
 
 function updateWeather(data: WeatherData, store: boolean): void {
-  weatherState.update(state => ({...state, ...buildWeatherState(data)}))
+  weatherState.update(state => ({...state, ...buildWeatherState(data), statusText: ''}))
   if (store) writeStorage(WEATHER_KEY, JSON.stringify({ts: Date.now(), data}))
 }
 
@@ -250,6 +252,7 @@ async function fetchWeather(lat: number, lon: number, store = true): Promise<voi
     updateWeather(data, store)
   } catch (e) {
     console.error('Weather error', e)
+    weatherState.update(state => (state.statusText ? {...state, statusText: 'No data'} : state))
   }
 }
 

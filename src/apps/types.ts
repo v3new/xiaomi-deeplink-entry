@@ -5,6 +5,7 @@ export type App = {
   scheme?: string
   path?: string
   fallbackUrl?: string
+  iconSource?: string
   icon: string
 }
 

@@ -57,20 +57,25 @@ function startNativeWatch(): void {
     return
   }
 
-  watchId = navigator.geolocation.watchPosition(
-    pos => {
-      const lat = pos.coords.latitude
-      const lon = pos.coords.longitude
-      const s = pos.coords.speed
-      const speed = s && !Number.isNaN(s) ? s * 3.6 : 0
-      notify({lat, lon, speed})
-    },
-    err => {
-      console.warn('Geolocation error', err)
-      startFallback()
-    },
-    {enableHighAccuracy: true, maximumAge: 10000, timeout: 60000},
-  )
+  try {
+    watchId = navigator.geolocation.watchPosition(
+      pos => {
+        const lat = pos.coords.latitude
+        const lon = pos.coords.longitude
+        const s = pos.coords.speed
+        const speed = s && !Number.isNaN(s) ? s * 3.6 : 0
+        notify({lat, lon, speed})
+      },
+      err => {
+        console.warn('Geolocation error', err)
+        startFallback()
+      },
+      {enableHighAccuracy: true, maximumAge: 10000, timeout: 60000},
+    )
+  } catch (e) {
+    console.warn('Geolocation watch failed', e)
+    startFallback()
+  }
 }
 
 function watchLocation(cb: LocationCb): void {

@@ -20,12 +20,16 @@ function openWeather() {
     <span id="weatherTemp" class="weather-temp">{$weatherState.temperature}</span>
   </div>
   <div id="weatherForecast" class="weather-forecast">
-    {#each $weatherState.forecast as hour (`${hour.time}-${hour.temp}`)}
+    {#if $weatherState.statusText}
+      <span class="weather-status">{$weatherState.statusText}</span>
+    {:else}
+      {#each $weatherState.forecast as hour (`${hour.time}-${hour.temp}`)}
       <div class="hour">
         <img src={hour.iconUrl} alt="" />
         <span>{hour.time}</span>
         <span>{hour.temp}</span>
       </div>
-    {/each}
+      {/each}
+    {/if}
   </div>
 </button>

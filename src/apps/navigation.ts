@@ -8,7 +8,9 @@ export const navigation: App[] = [
     scheme: 'yandexnavi',
     path: '',
     fallbackUrl: 'https://maps.yandex.ru',
-    icon: 'https://play-lh.googleusercontent.com/quo2QK2mxipWCZiBTM58nyENopQsvXpLz1wqLOhlBg8TxJ8tEH_T9buZVdRnSDa-vPY=s64-rw',
+    iconSource:
+      'https://play-lh.googleusercontent.com/quo2QK2mxipWCZiBTM58nyENopQsvXpLz1wqLOhlBg8TxJ8tEH_T9buZVdRnSDa-vPY=s64-rw',
+    icon: '/app-icons/yandex-navi.webp',
   },
   {
     id: 'yandex-maps',
@@ -17,7 +19,9 @@ export const navigation: App[] = [
     scheme: 'yandexmaps',
     path: '',
     fallbackUrl: 'https://maps.yandex.ru',
-    icon: 'https://play-lh.googleusercontent.com/DLCdDuCkVMI-vQhbNmPJU8cIDZulGHJxYGz_Cm9Mbrv6ssl9TW-RUMXfzczd9NKZj4w=s64-rw',
+    iconSource:
+      'https://play-lh.googleusercontent.com/DLCdDuCkVMI-vQhbNmPJU8cIDZulGHJxYGz_Cm9Mbrv6ssl9TW-RUMXfzczd9NKZj4w=s64-rw',
+    icon: '/app-icons/yandex-maps.webp',
   },
   {
     id: 'google-maps',
@@ -26,7 +30,9 @@ export const navigation: App[] = [
     scheme: 'google.navigation',
     path: '',
     fallbackUrl: 'https://maps.google.com',
-    icon: 'https://play-lh.googleusercontent.com/Kf8WTct65hFJxBUDm5E-EpYsiDoLQiGGbnuyP6HBNax43YShXti9THPon1YKB6zPYpA=s64-rw',
+    iconSource:
+      'https://play-lh.googleusercontent.com/Kf8WTct65hFJxBUDm5E-EpYsiDoLQiGGbnuyP6HBNax43YShXti9THPon1YKB6zPYpA=s64-rw',
+    icon: '/app-icons/google-maps.webp',
   },
   {
     id: '2gis',
@@ -35,7 +41,9 @@ export const navigation: App[] = [
     scheme: 'dublgis',
     path: '',
     fallbackUrl: 'https://2gis.ru',
-    icon: 'https://play-lh.googleusercontent.com/55huczUZ05ruaVynURUNqzgTu0qXLF-SPQZKtE9KA6_BavI-g0NgXz1NR98n5xX33HwD=s64-rw',
+    iconSource:
+      'https://play-lh.googleusercontent.com/55huczUZ05ruaVynURUNqzgTu0qXLF-SPQZKtE9KA6_BavI-g0NgXz1NR98n5xX33HwD=s64-rw',
+    icon: '/app-icons/2gis.webp',
   },
   {
     id: 'waze',
@@ -44,6 +52,8 @@ export const navigation: App[] = [
     scheme: 'waze',
     path: '',
     fallbackUrl: 'https://www.waze.com',
-    icon: 'https://play-lh.googleusercontent.com/r7XL36PVNtnidqy6ikRiW1AHEIsjhePrZ8W5M4cNTQy5ViF3-lIDY47hpvxc84kJ7lw=s64-rw',
+    iconSource:
+      'https://play-lh.googleusercontent.com/r7XL36PVNtnidqy6ikRiW1AHEIsjhePrZ8W5M4cNTQy5ViF3-lIDY47hpvxc84kJ7lw=s64-rw',
+    icon: '/app-icons/waze.webp',
   },
 ]
