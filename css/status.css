@@ -1,0 +1,164 @@
+.status-bar {
+  width: 100%;
+  max-width: 700px;
+  padding: 0 32px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  top: 18px;
+}
+
+/* Clock block */
+.info-block {
+  display: flex;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  justify-content: space-between;
+  align-items: center;
+  height: 116px;
+  background-color: unset;
+}
+
+.clock-time {
+  font-size: 56px;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  line-height: 1;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.clock-date {
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+/* Weather block */
+.weather-area {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.geo-location {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.weather-location {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.weather-current {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.weather-icon {
+  margin: -10px 0;
+  width: 48px;
+  height: 48px;
+  display: none;
+}
+
+.weather-temp {
+  font-size: 36px;
+  font-weight: 600;
+}
+
+.weather-forecast {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.weather-forecast .hour {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 9px;
+}
+
+.weather-forecast .hour img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Battery badge */
+.battery-area {
+  display: block;
+}
+
+.battery-badge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.battery-icon {
+  width: 42px;
+  height: 21px;
+  display: block;
+}
+
+.bat-bolt {
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  left: -26px;
+}
+
+.bat-text {
+  font-size: 6px;
+  fill: #fffffff2;
+}
+
+.bat-body {
+  fill: none;
+  stroke: var(--battery-color);
+  stroke-width: 1;
+}
+
+.bat-cap,
+.bat-fill {
+  fill: var(--battery-color);
+}
+
+.bat-bolt path {
+  fill: #ffb300;
+}
+
+/* Blink for critical state */
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.battery-badge.blink {
+  animation: blink 1s steps(2, start) infinite;
+}

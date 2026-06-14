@@ -1,11 +1,11 @@
 @property --size {
-  syntax: '<length>';
+  syntax: "<length>";
   initial-value: 18px;
   inherits: false;
 }
 
 @property --speed {
-  syntax: '<time>';
+  syntax: "<time>";
   initial-value: 35s;
   inherits: false;
 }
@@ -36,7 +36,7 @@
   );
   mask:
     radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50% 50% / var(--size) var(--size),
-    url('../images/noise-mask.png') 256px 50% / 256px 256px;
+    url("../images/noise-mask.png") 256px 50% / 256px 256px;
   mask-composite: intersect;
   animation: flicker var(--speed) infinite linear;
 

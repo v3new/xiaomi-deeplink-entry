@@ -31,7 +31,7 @@ body {
   margin: 0;
   padding: 0;
   background: linear-gradient(50deg, var(--bg-start), var(--bg-end));
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   color: var(--text-color);
   display: flex;
   justify-content: center;
@@ -42,22 +42,10 @@ body {
   position: relative;
 }
 
-.status-bar {
-  width: 100%;
-  max-width: 700px;
-  padding: 0 32px;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: absolute;
-  top: 18px;
-}
-
 .wrapper {
   width: 100%;
   max-width: 700px;
-  padding: 0 20px 80px 20px;
+  padding: 0 20px 28px;
   box-sizing: border-box;
   position: relative;
 }
@@ -95,7 +83,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   transition:
     transform 0.1s ease,
     background-color 0.2s ease;
@@ -115,10 +103,10 @@ body {
 }
 
 .app-icon {
-  width: 42px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
   border-radius: 9px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   opacity: 0.8;
 }
 
@@ -135,73 +123,11 @@ body {
   color: var(--secondary-color);
 }
 
-.settings-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 100;
-  display: none;
-}
-
-.settings-overlay.active {
-  display: block;
-}
-
-.settings-panel {
-  position: fixed;
-  top: 0;
-  right: -100%;
-  width: 280px;
-  height: 100vh;
-  background-color: var(--card-color);
-  border-left: 1px solid #2a2f51;
-  padding: 24px 16px 100px 16px;
-  box-sizing: border-box;
-  transition: right 0.3s ease;
-  z-index: 102;
-  overflow-y: scroll;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.settings-panel.open {
-  right: 0;
-}
-
-.setting-item {
-  display: flex;
-  align-items: center;
-}
-
-.settings-panel label {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  gap: 12px;
-  font-size: 16px;
-  padding: 12px;
-  margin-right: 6px;
-  border-radius: var(--radius);
-  background-color: var(--btn-color);
-  cursor: pointer;
-}
-
-.settings-panel input[type='checkbox'] {
-  width: 20px;
-  height: 20px;
-}
-
-.order-controls {
-  opacity: 0.6;
-}
-
 .footer {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 34px;
 }
 
 .links {
@@ -223,151 +149,4 @@ body {
 
 .links a:hover {
   color: var(--accent-color);
-}
-
-/* Clock block */
-.info-block {
-  display: flex;
-  margin-top: 15px;
-  margin-bottom: 5px;
-  justify-content: space-between;
-  align-items: center;
-  height: 116px;
-  background-color: unset;
-}
-
-.clock-time {
-  font-size: 56px;
-  font-optical-sizing: auto;
-  font-weight: 500;
-  line-height: 1;
-  font-family: 'Space Grotesk', sans-serif;
-}
-
-.clock-date {
-  font-size: 16px;
-  opacity: 0.7;
-}
-
-/* Weather block */
-.weather-area {
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.geo-location {
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.weather-location {
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-bottom: 8px;
-}
-
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-.weather-current {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 6px;
-}
-
-.weather-icon {
-  margin: -10px 0;
-  width: 48px;
-  height: 48px;
-  display: none;
-}
-
-.weather-temp {
-  font-size: 36px;
-  font-weight: 600;
-}
-
-.weather-forecast {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.weather-forecast .hour {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 9px;
-}
-
-.weather-forecast .hour img {
-  width: 20px;
-  height: 20px;
-}
-
-/* Battery badge */
-.battery-area {
-  display: block;
-}
-
-.battery-badge {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.battery-icon {
-  width: 42px;
-  height: 21px;
-  display: block;
-}
-
-.bat-bolt {
-  width: 32px;
-  height: 32px;
-  position: absolute;
-  left: -26px;
-}
-
-.bat-text {
-  font-size: 6px;
-  fill: #fffffff2;
-}
-
-.bat-body {
-  fill: none;
-  stroke: var(--battery-color);
-  stroke-width: 1;
-}
-
-.bat-cap,
-.bat-fill {
-  fill: var(--battery-color);
-}
-
-.bat-bolt path {
-  fill: #ffb300;
-}
-
-/* Blink for critical state */
-@keyframes blink {
-  50% {
-    opacity: 0.25;
-  }
-}
-
-.battery-badge.blink {
-  animation: blink 1s steps(2, start) infinite;
 }

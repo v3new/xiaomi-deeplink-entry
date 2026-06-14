@@ -3,85 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Disable caching -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
     <title>Xiaomi DeepLink Entry</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500&display=swap" rel="stylesheet" />
-    <link href="favicon.ico" type="image/x-icon" rel="shortcut icon" />
-    <link href="css/main.css?v=202506150415" rel="stylesheet" />
-    <link href="css/background.css?v=202506150415" rel="stylesheet" />
-    <script src="data/services.js?v=202606120004"></script>
-    <script src="js/utils.js?v=202606120004"></script>
-    <script src="js/device.js?v=202506150415"></script>
+    <script>
+      if (location.hostname === 'v3new.github.io') {
+        location.replace('https://xiaomiev.v3new.dev/')
+      }
+    </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500&display=swap"
+      rel="stylesheet" />
+    <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+    <style>
+      #app {
+        display: contents;
+      }
+    </style>
   </head>
   <body>
-    <div class="stars"></div>
-    <div class="settings-overlay" id="settingsOverlay"></div>
-    <div class="status-bar" id="statusBar">
-      <div class="geo-location" id="geoLocation">
-        <span class="status-dot" id="locationDot"></span>
-        <span id="weatherPlace"></span>
-      </div>
-      <div class="battery-area" id="batteryArea">
-        <div class="battery-badge" id="batteryBadge">
-          <svg id="bolt" class="bat-bolt" viewBox="0 0 28 14" aria-hidden="true" style="display: none">
-            <path d="M14 3 L10 8 h3 l-1 4 5-6 h-3 z" />
-          </svg>
-          <svg class="battery-icon" id="batteryIcon" viewBox="0 0 28 14" aria-hidden="true">
-            <rect class="bat-body" x="1" y="2" width="24" height="10" rx="3" />
-            <rect class="bat-cap" x="26" y="5" width="2" height="4" rx="1" />
-            <rect class="bat-fill" id="batteryLevelFill" x="2" y="3" width="0" height="8" rx="2" />
-            <text
-              class="bat-text"
-              id="batteryPercentText"
-              x="13"
-              y="7"
-              text-anchor="middle"
-              dominant-baseline="central">
-              -
-            </text>
-          </svg>
-        </div>
-      </div>
-    </div>
-    <div class="wrapper">
-      <div id="infoBlock" class="section info-block">
-        <div class="clock-area">
-          <div id="clockTime" class="clock-time"></div>
-          <div id="clockDate" class="clock-date"></div>
-        </div>
-        <div class="weather-area">
-          <div id="weatherCurrent" class="weather-current">
-            <img id="weatherIcon" class="weather-icon" alt="" />
-            <span id="weatherTemp" class="weather-temp"></span>
-          </div>
-          <div id="weatherForecast" class="weather-forecast"></div>
-        </div>
-      </div>
-      <div id="sections"></div>
-      <div class="settings-panel" id="settingsPanel"></div>
-      <div class="footer">
-        <div class="links">
-          <a href="https://t.me/XiaomiEVclub" class="xiaomi-club" target="_blank">Xiaomi Enthusiasts</a> //
-          Idea Hub //
-          <a href="https://t.me/v3new" class="idea-hub" target="_blank">@v3new</a>
-        </div>
-        <div class="settings-toggle">
-          <img src="svg/settings.svg" alt="settings" />
-        </div>
-      </div>
-    </div>
-
-    <script src="js/weather.js?v=202508090344"></script>
-    <script src="js/speed.js?v=202508090344"></script>
-    <script src="js/clock.js?v=202508090344"></script>
-    <script src="js/battery.js?v=202508090344"></script>
-    <script src="js/app.js?v=202508090344"></script>
-
-    <script>
-      window.initializeInterface()
-    </script>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

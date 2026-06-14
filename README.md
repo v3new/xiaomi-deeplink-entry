@@ -41,9 +41,18 @@ Explore our curated collection of apps organized into categories for your conven
 ### Communication
 
 - Zoom
+
+### AI
+
 - ChatGPT
+- Claude
+- Grok
+- Gemini
+- Qwen
 - DeepSeek
 - Alice
+- Kimi
+- Perplexity
 
 ### Entertainment
 
@@ -63,7 +72,7 @@ Explore our curated collection of apps organized into categories for your conven
 - Facebook
 - VK
 
-Tech enthusiasts can dive deeper into the source code and check out full details like ID, package, scheme, fallback URL, icon, and more in the `SERVICES` constant
+Tech enthusiasts can dive deeper into `src/apps` and check out full details like ID, package, scheme, fallback URL, icon, and more in the `SERVICES` constant
 
 ## We Love Contributions! 💡
 
