@@ -1,0 +1,109 @@
+.debug-panel {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  z-index: 500;
+  max-height: 42dvh;
+  overflow: hidden;
+  border: 1px solid rgb(35 255 146 / 40%);
+  border-radius: 8px;
+  background: rgb(5 10 16 / 78%);
+  color: #d8ffe9;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10px;
+  line-height: 1.35;
+  box-shadow: 0 12px 36px rgb(0 0 0 / 35%);
+  backdrop-filter: blur(6px);
+}
+
+.debug-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 8px;
+  border-bottom: 1px solid rgb(35 255 146 / 22%);
+  background: rgb(0 0 0 / 28%);
+}
+
+.debug-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #23ff92;
+}
+
+.debug-actions {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.debug-actions button,
+.debug-tab {
+  border: 1px solid rgb(35 255 146 / 35%);
+  border-radius: 6px;
+  background: rgb(35 255 146 / 12%);
+  color: #d8ffe9;
+  font: inherit;
+  padding: 3px 7px;
+}
+
+.debug-log {
+  max-height: calc(42dvh - 33px);
+  overflow: auto;
+  padding: 7px 8px 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.debug-line {
+  display: grid;
+  grid-template-columns: 58px 58px minmax(0, 1fr);
+  gap: 6px;
+  align-items: baseline;
+  padding: 1px 0;
+}
+
+.debug-line.error {
+  color: #ff8585;
+}
+
+.debug-line.warn {
+  color: #ffd166;
+}
+
+.debug-line.ok {
+  color: #7dffb2;
+}
+
+.debug-time {
+  color: #91a3b0;
+}
+
+.debug-scope {
+  color: #66d9ef;
+}
+
+.debug-message,
+.debug-details {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.debug-details {
+  grid-column: 3;
+  color: #aebac3;
+  opacity: 0.9;
+}
+
+.debug-tab {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 500;
+  background: rgb(5 10 16 / 78%);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10px;
+  backdrop-filter: blur(6px);
+}

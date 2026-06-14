@@ -6,7 +6,7 @@
     <title>Xiaomi DeepLink Entry</title>
     <script>
       if (location.hostname === 'v3new.github.io') {
-        location.replace('https://xiaomiev.v3new.dev/')
+        location.replace(`https://xiaomiev.v3new.dev/${location.search}${location.hash}`)
       }
     </script>
     <link

@@ -1,3 +1,5 @@
+import {debugLog} from './debug'
+
 export type LocationState = {lat: number; lon: number; speed: number}
 export type BatteryState = {
   pct: number
@@ -25,6 +27,11 @@ let batteryWatching = false
 function notify(state: LocationState): void {
   lastData = state
   hasLocationData = true
+  debugLog('geo', 'position packet accepted', 'ok', {
+    lat: Number(state.lat.toFixed(5)),
+    lon: Number(state.lon.toFixed(5)),
+    speed: Math.round(state.speed),
+  })
   for (const cb of subscribers) {
     try {
       cb(state)
@@ -46,6 +53,7 @@ function notifyBattery(state: BatteryState): void {
 }
 
 function startFallback(): void {
+  debugLog('geo', 'fallback coordinates engaged', 'warn', fallbackCoords)
   if (watchId != null && navigator.geolocation) {
     navigator.geolocation.clearWatch(watchId)
     watchId = null
@@ -55,11 +63,13 @@ function startFallback(): void {
 
 function startNativeWatch(): void {
   if (!navigator.geolocation) {
+    debugLog('geo', 'navigator.geolocation missing', 'warn')
     startFallback()
     return
   }
 
   try {
+    debugLog('geo', 'native watch armed')
     watchId = navigator.geolocation.watchPosition(
       pos => {
         const lat = pos.coords.latitude
@@ -70,18 +80,21 @@ function startNativeWatch(): void {
       },
       err => {
         console.warn('Geolocation error', err)
+        debugLog('geo', 'native watch rejected', 'warn', {code: err.code, message: err.message})
         startFallback()
       },
       {enableHighAccuracy: true, maximumAge: 10000, timeout: 60000},
     )
   } catch (e) {
     console.warn('Geolocation watch failed', e)
+    debugLog('geo', 'native watch exploded', 'error', e)
     startFallback()
   }
 }
 
 function watchLocation(cb: LocationCb): void {
   subscribers.push(cb)
+  debugLog('geo', 'subscriber attached', 'info', {count: subscribers.length, hasLocationData})
   if (hasLocationData) cb(lastData)
   if (!watching) {
     watching = true

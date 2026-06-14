@@ -4,6 +4,7 @@ import '../css/status.css'
 import '../css/background.css'
 import '../css/sections.css'
 import '../css/edit.css'
+import '../css/debug.css'
 import App from './App.svelte'
 
 const target = document.getElementById('app')

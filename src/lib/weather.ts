@@ -1,4 +1,5 @@
 import {writable} from 'svelte/store'
+import {debugLog} from './debug'
 import {Device} from './device'
 
 const LOCATION_KEY = 'weather_location'
@@ -92,6 +93,7 @@ function readStorage(key: string): string | null {
     return localStorage.getItem(key)
   } catch (e) {
     console.warn('Weather storage read failed', e)
+    debugLog('store', `storage read denied: ${key}`, 'warn', e)
     return null
   }
 }
@@ -101,6 +103,7 @@ function writeStorage(key: string, value: string): void {
     localStorage.setItem(key, value)
   } catch (e) {
     console.warn('Weather storage write failed', e)
+    debugLog('store', `storage write denied: ${key}`, 'warn', e)
   }
 }
 
@@ -186,9 +189,13 @@ function parseJson<T>(raw: string | null, parse: (value: unknown) => T | null): 
 }
 
 async function fetchJson(url: string, label: string, timeoutMs: number): Promise<unknown> {
+  const startedAt = performance.now()
+  debugLog('net', `${label} uplink open`, 'info', {timeoutMs, url})
+
   if (typeof AbortController === 'undefined') {
     const response = await fetch(url)
     if (!response.ok) throw new Error(`${label} failed: ${response.status}`)
+    debugLog('net', `${label} payload received`, 'ok', {ms: Math.round(performance.now() - startedAt)})
     return response.json()
   }
 
@@ -198,7 +205,17 @@ async function fetchJson(url: string, label: string, timeoutMs: number): Promise
   try {
     const response = await fetch(url, {signal: controller.signal})
     if (!response.ok) throw new Error(`${label} failed: ${response.status}`)
+    debugLog('net', `${label} payload received`, 'ok', {
+      ms: Math.round(performance.now() - startedAt),
+      status: response.status,
+    })
     return response.json()
+  } catch (e) {
+    debugLog('net', `${label} uplink failed`, 'error', {
+      ms: Math.round(performance.now() - startedAt),
+      error: e instanceof Error ? e.message : String(e),
+    })
+    throw e
   } finally {
     window.clearTimeout(timer)
   }
@@ -274,29 +291,63 @@ function buildWeatherState(data: WeatherData): Pick<WeatherState, 'forecast' | '
 
 function updateWeather(data: WeatherData, store: boolean): void {
   weatherState.update(state => ({...state, ...buildWeatherState(data), statusText: ''}))
+  debugLog('weather', 'ui state patched', 'ok', {
+    currentTime: data.current_weather.time,
+    store,
+    temp: Math.round(data.current_weather.temperature),
+    weathercode: data.current_weather.weathercode,
+  })
   if (store) writeStorage(WEATHER_KEY, JSON.stringify({ts: Date.now(), data}))
 }
 
 async function fetchWeather(lat: number, lon: number, store = true): Promise<void> {
   const requestId = ++weatherRequestId
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day&hourly=temperature_2m,weather_code,is_day&forecast_days=2&timezone=auto`
+  debugLog('weather', 'open-meteo daemon spawned', 'info', {
+    lat: Number(lat.toFixed(5)),
+    lon: Number(lon.toFixed(5)),
+    requestId,
+    store,
+  })
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
-    if (attempt > 0) await new Promise(resolve => window.setTimeout(resolve, WEATHER_RETRY_DELAY_MS))
-    if (requestId !== weatherRequestId) return
+    if (attempt > 0) {
+      debugLog('weather', 'retry backoff engaged', 'warn', {delayMs: WEATHER_RETRY_DELAY_MS, requestId})
+      await new Promise(resolve => window.setTimeout(resolve, WEATHER_RETRY_DELAY_MS))
+    }
+    if (requestId !== weatherRequestId) {
+      debugLog('weather', 'stale weather request neutralized', 'warn', {requestId, active: weatherRequestId})
+      return
+    }
 
     try {
-      const data = parseWeatherData(await fetchJson(url, 'Weather request', WEATHER_TIMEOUT_MS))
-      if (!data) throw new Error('Weather response has unexpected shape')
-      if (requestId !== weatherRequestId) return
+      debugLog('weather', `attempt ${attempt + 1}/2: packet request`, 'info', {requestId})
+      const payload = await fetchJson(url, 'Weather request', WEATHER_TIMEOUT_MS)
+      const data = parseWeatherData(payload)
+      if (!data) {
+        debugLog('weather', 'packet rejected by parser', 'error', {
+          payload: isRecord(payload) ? Object.keys(payload) : typeof payload,
+        })
+        throw new Error('Weather response has unexpected shape')
+      }
+      debugLog('weather', 'packet decoded', 'ok', {
+        currentTime: data.current_weather.time,
+        hours: data.hourly.time.length,
+      })
+      if (requestId !== weatherRequestId) {
+        debugLog('weather', 'decoded packet became stale', 'warn', {requestId, active: weatherRequestId})
+        return
+      }
       updateWeather(data, store)
       return
     } catch (e) {
       console.error('Weather error', e)
+      debugLog('weather', `attempt ${attempt + 1}/2: daemon fault`, 'error', e)
     }
   }
 
   if (requestId !== weatherRequestId) return
+  debugLog('weather', 'all attempts burned; ui marked no-data', 'error', {requestId})
   weatherState.update(state => (state.statusText ? {...state, statusText: 'No data'} : state))
 }
 
@@ -306,6 +357,7 @@ function updateLocation(name: string, color: string): void {
 
 async function fetchLocationName(lat: number, lon: number): Promise<string> {
   try {
+    debugLog('geo', 'reverse geocode probe', 'info', {lat: Number(lat.toFixed(5)), lon: Number(lon.toFixed(5))})
     const data = await fetchJson(
       `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=jsonv2`,
       'Reverse geocode request',
@@ -313,9 +365,11 @@ async function fetchLocationName(lat: number, lon: number): Promise<string> {
     )
     const addr = isRecord(data) && isRecord(data.address) ? data.address : {}
     const name = addr.suburb ?? addr.city ?? addr.town ?? addr.village ?? addr.county
+    debugLog('geo', 'reverse geocode decoded', 'ok', {name: typeof name === 'string' ? name : ''})
     return typeof name === 'string' ? name : ''
   } catch (e) {
     console.error('Reverse geocode error', e)
+    debugLog('geo', 'reverse geocode dark', 'warn', e)
     return ''
   }
 }
@@ -337,14 +391,24 @@ function distKm(lat1: number, lon1: number, lat2: number, lon2: number): number 
 }
 
 export function initWeather(): void {
-  if (initialized) return
+  if (initialized) {
+    debugLog('weather', 'boot skipped: daemon already hot', 'warn')
+    return
+  }
   initialized = true
+  debugLog('weather', 'boot sequence armed')
 
   const storedWeather = parseJson(readStorage(WEATHER_KEY), parseStoredWeather)
-  if (storedWeather) updateWeather(storedWeather.data, false)
+  if (storedWeather) {
+    debugLog('weather', 'cache hit: stale packet replayed', 'ok')
+    updateWeather(storedWeather.data, false)
+  } else {
+    debugLog('weather', 'cache miss: cold start', 'warn')
+  }
 
   const savedLoc = parseJson(readStorage(LOCATION_KEY), parseStoredLocation)
   const loc = savedLoc ?? {lat: 55.7558, lon: 37.6176, name: 'Moscow'}
+  debugLog('weather', savedLoc ? 'location cache loaded' : 'location fallback selected', savedLoc ? 'ok' : 'warn', loc)
 
   updateLocation(loc.name, 'orange')
   void fetchWeather(loc.lat, loc.lon, true)
@@ -355,23 +419,41 @@ export function initWeather(): void {
   Device.watchLocation(async pos => {
     const now = Date.now()
     const {lat, lon} = pos
-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return
-    if (lat === lastCoords.lat && lon === lastCoords.lon) return
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      debugLog('geo', 'invalid coordinates dropped', 'warn', pos)
+      return
+    }
+    if (lat === lastCoords.lat && lon === lastCoords.lon) {
+      debugLog('geo', 'duplicate coordinates ignored', 'info')
+      return
+    }
 
     const distance = distKm(lastCoords.lat, lastCoords.lon, lat, lon)
-    if (distance < DIST_THRESHOLD_KM) return
+    if (distance < DIST_THRESHOLD_KM) {
+      debugLog('geo', 'micro drift ignored', 'info', {distanceKm: Number(distance.toFixed(3))})
+      return
+    }
 
     updateTimes = updateTimes.filter(ts => now - ts < WINDOW_MS)
-    if (updateTimes.length >= MAX_UPDATES) return
+    if (updateTimes.length >= MAX_UPDATES) {
+      debugLog('geo', 'rate limit shield raised', 'warn', {updates: updateTimes.length})
+      return
+    }
 
     updateTimes.push(now)
     lastCoords = {lat, lon}
+    debugLog('geo', 'coordinates promoted', 'ok', {
+      distanceKm: Number(distance.toFixed(3)),
+      lat: Number(lat.toFixed(5)),
+      lon: Number(lon.toFixed(5)),
+    })
 
     void fetchWeather(lat, lon, true)
 
     const name = await fetchLocationName(lat, lon)
     const locationName = name || `${lat.toFixed(2)}, ${lon.toFixed(2)}`
     updateLocation(locationName, 'green')
+    debugLog('geo', 'location label patched', 'ok', {locationName})
     writeStorage(LOCATION_KEY, JSON.stringify({lat, lon, name: locationName}))
   })
 }

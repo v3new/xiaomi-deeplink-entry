@@ -1,6 +1,7 @@
 <script lang="ts">
 import {onMount} from 'svelte'
 import settingsIcon from '../svg/settings.svg'
+import DebugPanel from './components/DebugPanel.svelte'
 import FolderOverlay from './components/FolderOverlay.svelte'
 import Home from './components/Home.svelte'
 import InfoBlock from './components/InfoBlock.svelte'
@@ -62,3 +63,4 @@ function enterEdit() {
 
 <Tray />
 <FolderOverlay />
+<DebugPanel />
