@@ -4,8 +4,9 @@ import {Device} from './device'
 const LOCATION_KEY = 'weather_location'
 const WEATHER_KEY = 'weather_data'
 
-const WEATHER_TIMEOUT_MS = 7000
+const WEATHER_TIMEOUT_MS = 15000
 const GEOCODE_TIMEOUT_MS = 5000
+const WEATHER_RETRY_DELAY_MS = 1500
 
 const ICON_BASE = '/weather-icons'
 
@@ -116,21 +117,30 @@ function isStringArray(value: unknown): value is string[] {
 }
 
 function parseWeatherData(value: unknown): WeatherData | null {
-  if (!isRecord(value) || !isRecord(value.current_weather) || !isRecord(value.hourly)) return null
+  if (!isRecord(value) || !isRecord(value.hourly)) return null
 
-  const current = value.current_weather
+  const current = isRecord(value.current)
+    ? value.current
+    : isRecord(value.current_weather)
+      ? value.current_weather
+      : null
+  if (!current) return null
+
+  const currentTemperature = current.temperature_2m ?? current.temperature
+  const currentWeatherCode = current.weather_code ?? current.weathercode
   const hourly = value.hourly
   const isDay = current.is_day
+  const hourlyWeatherCode = hourly.weather_code ?? hourly.weathercode
   const hourlyIsDay = hourly.is_day
 
   if (
-    typeof current.temperature !== 'number' ||
-    typeof current.weathercode !== 'number' ||
+    typeof currentTemperature !== 'number' ||
+    typeof currentWeatherCode !== 'number' ||
     typeof current.time !== 'string' ||
     (isDay !== undefined && typeof isDay !== 'number' && typeof isDay !== 'boolean') ||
     !isStringArray(hourly.time) ||
     !isNumberArray(hourly.temperature_2m) ||
-    !isNumberArray(hourly.weathercode) ||
+    !isNumberArray(hourlyWeatherCode) ||
     (hourlyIsDay !== undefined && !isNumberArray(hourlyIsDay))
   ) {
     return null
@@ -138,15 +148,15 @@ function parseWeatherData(value: unknown): WeatherData | null {
 
   return {
     current_weather: {
-      temperature: current.temperature,
-      weathercode: current.weathercode,
+      temperature: currentTemperature,
+      weathercode: currentWeatherCode,
       is_day: isDay,
       time: current.time,
     },
     hourly: {
       time: hourly.time,
       temperature_2m: hourly.temperature_2m,
-      weathercode: hourly.weathercode,
+      weathercode: hourlyWeatherCode,
       is_day: hourlyIsDay,
     },
   }
@@ -200,6 +210,29 @@ function weatherIconUrl(code: number, isDay: boolean): string {
   return `${ICON_BASE}/${name}.png`
 }
 
+function findCurrentHourIndex(hourlyTimes: string[], currentTime: string): number {
+  const exactIndex = hourlyTimes.indexOf(currentTime)
+  if (exactIndex !== -1) return exactIndex
+
+  const currentDate = new Date(currentTime)
+  const currentMs = currentDate.getTime()
+  if (Number.isNaN(currentMs)) return -1
+
+  let closestPastIndex = -1
+  let closestPastMs = Number.NEGATIVE_INFINITY
+
+  for (let i = 0; i < hourlyTimes.length; i += 1) {
+    const hourlyMs = new Date(hourlyTimes[i]).getTime()
+    if (Number.isNaN(hourlyMs)) continue
+    if (hourlyMs <= currentMs && hourlyMs > closestPastMs) {
+      closestPastIndex = i
+      closestPastMs = hourlyMs
+    }
+  }
+
+  return closestPastIndex
+}
+
 function buildWeatherState(data: WeatherData): Pick<WeatherState, 'forecast' | 'iconUrl' | 'temperature'> {
   const current = data.current_weather
   const hourlyTimes = data.hourly.time
@@ -216,7 +249,7 @@ function buildWeatherState(data: WeatherData): Pick<WeatherState, 'forecast' | '
         : !Number.isNaN(currentDate.getTime()) && currentHour >= 7 && currentHour <= 20
 
   const forecast: ForecastHour[] = []
-  const nowIndex = hourlyTimes.indexOf(current.time)
+  const nowIndex = findCurrentHourIndex(hourlyTimes, current.time)
   for (const hrs of [3, 6, 12, 24]) {
     const idx = nowIndex + hrs
     if (idx < 0 || idx >= hourlyTimes.length || idx >= tempArr.length || idx >= codeArr.length) continue
@@ -245,15 +278,26 @@ function updateWeather(data: WeatherData, store: boolean): void {
 }
 
 async function fetchWeather(lat: number, lon: number, store = true): Promise<void> {
-  try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode,is_day&forecast_days=2&timezone=auto`
-    const data = parseWeatherData(await fetchJson(url, 'Weather request', WEATHER_TIMEOUT_MS))
-    if (!data) throw new Error('Weather response has unexpected shape')
-    updateWeather(data, store)
-  } catch (e) {
-    console.error('Weather error', e)
-    weatherState.update(state => (state.statusText ? {...state, statusText: 'No data'} : state))
+  const requestId = ++weatherRequestId
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day&hourly=temperature_2m,weather_code,is_day&forecast_days=2&timezone=auto`
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    if (attempt > 0) await new Promise(resolve => window.setTimeout(resolve, WEATHER_RETRY_DELAY_MS))
+    if (requestId !== weatherRequestId) return
+
+    try {
+      const data = parseWeatherData(await fetchJson(url, 'Weather request', WEATHER_TIMEOUT_MS))
+      if (!data) throw new Error('Weather response has unexpected shape')
+      if (requestId !== weatherRequestId) return
+      updateWeather(data, store)
+      return
+    } catch (e) {
+      console.error('Weather error', e)
+    }
   }
+
+  if (requestId !== weatherRequestId) return
+  weatherState.update(state => (state.statusText ? {...state, statusText: 'No data'} : state))
 }
 
 function updateLocation(name: string, color: string): void {
@@ -282,6 +326,7 @@ const MAX_UPDATES = 10
 const WINDOW_MS = 10 * 60 * 1000
 
 let initialized = false
+let weatherRequestId = 0
 
 function distKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const toRad = (deg: number) => (deg * Math.PI) / 180
