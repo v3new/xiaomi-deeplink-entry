@@ -8,6 +8,7 @@ const WEATHER_KEY = 'weather_data'
 const WEATHER_TIMEOUT_MS = 15000
 const GEOCODE_TIMEOUT_MS = 5000
 const WEATHER_RETRY_DELAY_MS = 1500
+const LOCATION_NAME_DELAY_MS = 5000
 
 const ICON_BASE = '/weather-icons'
 
@@ -374,6 +375,82 @@ async function fetchLocationName(lat: number, lon: number): Promise<string> {
   }
 }
 
+function formatCoords(lat: number, lon: number): string {
+  return `${lat.toFixed(5)}, ${lon.toFixed(5)}`
+}
+
+function requestBrowserLocation(): Promise<{lat: number; lon: number}> {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('Geolocation is not supported'))
+      return
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({lat: pos.coords.latitude, lon: pos.coords.longitude}),
+      reject,
+      {enableHighAccuracy: true, maximumAge: 0, timeout: 60000},
+    )
+  })
+}
+
+async function promoteLocation(lat: number, lon: number, delayName: boolean): Promise<void> {
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    debugLog('geo', 'invalid coordinates dropped', 'warn', {lat, lon})
+    return
+  }
+
+  const refreshId = ++locationRefreshId
+  lastCoords = {lat, lon}
+  updateLocation(formatCoords(lat, lon), 'orange')
+  void fetchWeather(lat, lon, true)
+
+  if (delayName) {
+    debugLog('geo', 'reverse geocode delayed', 'info', {delayMs: LOCATION_NAME_DELAY_MS, refreshId})
+    await new Promise(resolve => window.setTimeout(resolve, LOCATION_NAME_DELAY_MS))
+  }
+
+  if (refreshId !== locationRefreshId) {
+    debugLog('geo', 'stale location label ignored', 'warn', {refreshId, active: locationRefreshId})
+    return
+  }
+
+  const name = await fetchLocationName(lat, lon)
+  if (refreshId !== locationRefreshId) {
+    debugLog('geo', 'decoded location label became stale', 'warn', {refreshId, active: locationRefreshId})
+    return
+  }
+
+  const locationName = name || formatCoords(lat, lon)
+  updateLocation(locationName, 'green')
+  debugLog('geo', 'location label patched', 'ok', {locationName})
+  writeStorage(LOCATION_KEY, JSON.stringify({lat, lon, name: locationName}))
+}
+
+export async function refreshLocationFromBrowser(): Promise<void> {
+  const refreshId = ++locationRefreshId
+  const initialCoords = lastCoords
+  updateLocation(formatCoords(initialCoords.lat, initialCoords.lon), 'orange')
+  debugLog('geo', 'manual location refresh requested', 'info', {
+    lat: Number(initialCoords.lat.toFixed(5)),
+    lon: Number(initialCoords.lon.toFixed(5)),
+    refreshId,
+  })
+
+  try {
+    const {lat, lon} = await requestBrowserLocation()
+    if (refreshId !== locationRefreshId) {
+      debugLog('geo', 'stale manual location response ignored', 'warn', {refreshId, active: locationRefreshId})
+      return
+    }
+    await promoteLocation(lat, lon, true)
+  } catch (e) {
+    console.warn('Manual geolocation refresh failed', e)
+    debugLog('geo', 'manual location refresh rejected', 'warn', e)
+    if (refreshId === locationRefreshId) updateLocation(formatCoords(initialCoords.lat, initialCoords.lon), 'orange')
+  }
+}
+
 const EARTH_RADIUS_KM = 6371
 const DIST_THRESHOLD_KM = 1
 const MAX_UPDATES = 10
@@ -381,6 +458,8 @@ const WINDOW_MS = 10 * 60 * 1000
 
 let initialized = false
 let weatherRequestId = 0
+let lastCoords = {lat: 55.7558, lon: 37.6176}
+let locationRefreshId = 0
 
 function distKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const toRad = (deg: number) => (deg * Math.PI) / 180
@@ -413,7 +492,7 @@ export function initWeather(): void {
   updateLocation(loc.name, 'orange')
   void fetchWeather(loc.lat, loc.lon, true)
 
-  let lastCoords = {lat: loc.lat, lon: loc.lon}
+  lastCoords = {lat: loc.lat, lon: loc.lon}
   let updateTimes: number[] = []
 
   Device.watchLocation(async pos => {
@@ -440,20 +519,13 @@ export function initWeather(): void {
       return
     }
 
-    updateTimes.push(now)
-    lastCoords = {lat, lon}
     debugLog('geo', 'coordinates promoted', 'ok', {
       distanceKm: Number(distance.toFixed(3)),
       lat: Number(lat.toFixed(5)),
       lon: Number(lon.toFixed(5)),
     })
 
-    void fetchWeather(lat, lon, true)
-
-    const name = await fetchLocationName(lat, lon)
-    const locationName = name || `${lat.toFixed(2)}, ${lon.toFixed(2)}`
-    updateLocation(locationName, 'green')
-    debugLog('geo', 'location label patched', 'ok', {locationName})
-    writeStorage(LOCATION_KEY, JSON.stringify({lat, lon, name: locationName}))
+    updateTimes.push(now)
+    await promoteLocation(lat, lon, false)
   })
 }

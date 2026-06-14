@@ -51,10 +51,17 @@
 }
 
 .geo-location {
+  font: inherit;
   font-size: 12px;
   display: flex;
   align-items: center;
   gap: 5px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .weather-location {
