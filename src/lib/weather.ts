@@ -302,8 +302,8 @@ function updateWeather(data: WeatherData, store: boolean): void {
 
 async function fetchWeather(lat: number, lon: number, store = true): Promise<void> {
   const requestId = ++weatherRequestId
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day&hourly=temperature_2m,weather_code,is_day&forecast_days=2&timezone=auto`
-  debugLog('weather', 'open-meteo daemon spawned', 'info', {
+  const url = `/api/weather?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`
+  debugLog('weather', 'weather proxy daemon spawned', 'info', {
     lat: Number(lat.toFixed(5)),
     lon: Number(lon.toFixed(5)),
     requestId,

@@ -9,6 +9,7 @@
     "build": "vite build",
     "icons:download": "node scripts/download-app-icons.mjs --refresh",
     "preview": "vite preview",
+    "start": "bun server/index.mjs",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "lint": "biome check .",
     "format": "biome format --write .",
@@ -25,5 +26,8 @@
   },
   "trustedDependencies": [
     "@biomejs/biome"
-  ]
+  ],
+  "dependencies": {
+    "hono": "^4.12.25"
+  }
 }
