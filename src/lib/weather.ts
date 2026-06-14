@@ -400,24 +400,24 @@ async function promoteLocation(lat: number, lon: number, delayName: boolean): Pr
     return
   }
 
-  const refreshId = ++locationRefreshId
+  const labelRequestId = ++locationLabelRequestId
   lastCoords = {lat, lon}
   updateLocation(formatCoords(lat, lon), 'orange')
   void fetchWeather(lat, lon, true)
 
   if (delayName) {
-    debugLog('geo', 'reverse geocode delayed', 'info', {delayMs: LOCATION_NAME_DELAY_MS, refreshId})
+    debugLog('geo', 'reverse geocode delayed', 'info', {delayMs: LOCATION_NAME_DELAY_MS, labelRequestId})
     await new Promise(resolve => window.setTimeout(resolve, LOCATION_NAME_DELAY_MS))
   }
 
-  if (refreshId !== locationRefreshId) {
-    debugLog('geo', 'stale location label ignored', 'warn', {refreshId, active: locationRefreshId})
+  if (labelRequestId !== locationLabelRequestId) {
+    debugLog('geo', 'stale location label ignored', 'warn', {labelRequestId, active: locationLabelRequestId})
     return
   }
 
   const name = await fetchLocationName(lat, lon)
-  if (refreshId !== locationRefreshId) {
-    debugLog('geo', 'decoded location label became stale', 'warn', {refreshId, active: locationRefreshId})
+  if (labelRequestId !== locationLabelRequestId) {
+    debugLog('geo', 'decoded location label became stale', 'warn', {labelRequestId, active: locationLabelRequestId})
     return
   }
 
@@ -428,26 +428,30 @@ async function promoteLocation(lat: number, lon: number, delayName: boolean): Pr
 }
 
 export async function refreshLocationFromBrowser(): Promise<void> {
-  const refreshId = ++locationRefreshId
+  const manualRequestId = ++manualLocationRequestId
   const initialCoords = lastCoords
   updateLocation(formatCoords(initialCoords.lat, initialCoords.lon), 'orange')
   debugLog('geo', 'manual location refresh requested', 'info', {
     lat: Number(initialCoords.lat.toFixed(5)),
     lon: Number(initialCoords.lon.toFixed(5)),
-    refreshId,
+    manualRequestId,
   })
 
   try {
     const {lat, lon} = await requestBrowserLocation()
-    if (refreshId !== locationRefreshId) {
-      debugLog('geo', 'stale manual location response ignored', 'warn', {refreshId, active: locationRefreshId})
+    if (manualRequestId !== manualLocationRequestId) {
+      debugLog('geo', 'stale manual location response ignored', 'warn', {
+        manualRequestId,
+        active: manualLocationRequestId,
+      })
       return
     }
     await promoteLocation(lat, lon, true)
   } catch (e) {
     console.warn('Manual geolocation refresh failed', e)
     debugLog('geo', 'manual location refresh rejected', 'warn', e)
-    if (refreshId === locationRefreshId) updateLocation(formatCoords(initialCoords.lat, initialCoords.lon), 'orange')
+    if (manualRequestId === manualLocationRequestId)
+      updateLocation(formatCoords(initialCoords.lat, initialCoords.lon), 'orange')
   }
 }
 
@@ -459,7 +463,8 @@ const WINDOW_MS = 10 * 60 * 1000
 let initialized = false
 let weatherRequestId = 0
 let lastCoords = {lat: 55.7558, lon: 37.6176}
-let locationRefreshId = 0
+let locationLabelRequestId = 0
+let manualLocationRequestId = 0
 
 function distKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const toRad = (deg: number) => (deg * Math.PI) / 180
