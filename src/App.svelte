@@ -13,8 +13,9 @@ import {initWeather} from './lib/weather'
 
 let wasEditing = false
 
+if (typeof window !== 'undefined') initWeather()
+
 onMount(() => {
-  initWeather()
   setupAutoReload()
 })
 

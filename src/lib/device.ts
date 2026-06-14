@@ -52,6 +52,11 @@ function startFallback(): void {
 }
 
 function startNativeWatch(): void {
+  if (!navigator.geolocation) {
+    startFallback()
+    return
+  }
+
   watchId = navigator.geolocation.watchPosition(
     pos => {
       const lat = pos.coords.latitude

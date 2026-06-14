@@ -4,7 +4,10 @@ import {Device} from './device'
 const LOCATION_KEY = 'weather_location'
 const WEATHER_KEY = 'weather_data'
 
-const ICON_BASE = 'https://raw.githubusercontent.com/engperini/open-meteo-icons/main/icons'
+const WEATHER_TIMEOUT_MS = 7000
+const GEOCODE_TIMEOUT_MS = 5000
+
+const ICON_BASE = '/weather-icons'
 
 const ICON_MAP: Record<number, {day: string; night: string}> = {
   0: {day: '0d', night: '0n'},
@@ -170,13 +173,28 @@ function parseJson<T>(raw: string | null, parse: (value: unknown) => T | null): 
   }
 }
 
-function iconName(code: number, isDay: boolean): string {
-  const icon = ICON_MAP[code]
-  if (!icon) return '0d'
-  return isDay ? icon.day : icon.night
+async function fetchJson(url: string, label: string, timeoutMs: number): Promise<unknown> {
+  if (typeof AbortController === 'undefined') {
+    const response = await fetch(url)
+    if (!response.ok) throw new Error(`${label} failed: ${response.status}`)
+    return response.json()
+  }
+
+  const controller = new AbortController()
+  const timer = window.setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const response = await fetch(url, {signal: controller.signal})
+    if (!response.ok) throw new Error(`${label} failed: ${response.status}`)
+    return response.json()
+  } finally {
+    window.clearTimeout(timer)
+  }
 }
 
-function iconUrl(name: string): string {
+function weatherIconUrl(code: number, isDay: boolean): string {
+  const icon = ICON_MAP[code]
+  const name = icon ? (isDay ? icon.day : icon.night) : '0d'
   return `${ICON_BASE}/${name}.png`
 }
 
@@ -186,7 +204,14 @@ function buildWeatherState(data: WeatherData): Pick<WeatherState, 'forecast' | '
   const tempArr = data.hourly.temperature_2m
   const codeArr = data.hourly.weathercode
   const dayArr = data.hourly.is_day ?? []
-  const currentIsDay = typeof current.is_day === 'boolean' ? current.is_day : current.is_day === 1
+  const currentDate = new Date(current.time)
+  const currentHour = currentDate.getHours()
+  const currentIsDay =
+    typeof current.is_day === 'boolean'
+      ? current.is_day
+      : typeof current.is_day === 'number'
+        ? current.is_day === 1
+        : !Number.isNaN(currentDate.getTime()) && currentHour >= 7 && currentHour <= 20
 
   const forecast: ForecastHour[] = []
   const nowIndex = hourlyTimes.indexOf(current.time)
@@ -199,7 +224,7 @@ function buildWeatherState(data: WeatherData): Pick<WeatherState, 'forecast' | '
 
     const isDay = dayArr[idx] !== undefined ? dayArr[idx] === 1 : date.getHours() >= 7 && date.getHours() <= 20
     forecast.push({
-      iconUrl: iconUrl(iconName(codeArr[idx], isDay)),
+      iconUrl: weatherIconUrl(codeArr[idx], isDay),
       temp: `${Math.floor(tempArr[idx])}°`,
       time: date.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'}),
     })
@@ -207,7 +232,7 @@ function buildWeatherState(data: WeatherData): Pick<WeatherState, 'forecast' | '
 
   return {
     forecast,
-    iconUrl: iconUrl(iconName(current.weathercode, currentIsDay)),
+    iconUrl: weatherIconUrl(current.weathercode, currentIsDay),
     temperature: `${Math.round(current.temperature)}°`,
   }
 }
@@ -220,10 +245,7 @@ function updateWeather(data: WeatherData, store: boolean): void {
 async function fetchWeather(lat: number, lon: number, store = true): Promise<void> {
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode,is_day&forecast_days=2&timezone=auto`
-    const response = await fetch(url)
-    if (!response.ok) throw new Error(`Weather request failed: ${response.status}`)
-
-    const data = parseWeatherData(await response.json())
+    const data = parseWeatherData(await fetchJson(url, 'Weather request', WEATHER_TIMEOUT_MS))
     if (!data) throw new Error('Weather response has unexpected shape')
     updateWeather(data, store)
   } catch (e) {
@@ -237,10 +259,11 @@ function updateLocation(name: string, color: string): void {
 
 async function fetchLocationName(lat: number, lon: number): Promise<string> {
   try {
-    const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=jsonv2`)
-    if (!resp.ok) throw new Error(`Reverse geocode request failed: ${resp.status}`)
-
-    const data: unknown = await resp.json()
+    const data = await fetchJson(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=jsonv2`,
+      'Reverse geocode request',
+      GEOCODE_TIMEOUT_MS,
+    )
     const addr = isRecord(data) && isRecord(data.address) ? data.address : {}
     const name = addr.suburb ?? addr.city ?? addr.town ?? addr.village ?? addr.county
     return typeof name === 'string' ? name : ''
@@ -255,6 +278,8 @@ const DIST_THRESHOLD_KM = 1
 const MAX_UPDATES = 10
 const WINDOW_MS = 10 * 60 * 1000
 
+let initialized = false
+
 function distKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const toRad = (deg: number) => (deg * Math.PI) / 180
   const dLat = toRad(lat2 - lat1)
@@ -264,6 +289,9 @@ function distKm(lat1: number, lon1: number, lat2: number, lon2: number): number 
 }
 
 export function initWeather(): void {
+  if (initialized) return
+  initialized = true
+
   const storedWeather = parseJson(readStorage(WEATHER_KEY), parseStoredWeather)
   if (storedWeather) updateWeather(storedWeather.data, false)
 
@@ -271,7 +299,7 @@ export function initWeather(): void {
   const loc = savedLoc ?? {lat: 55.7558, lon: 37.6176, name: 'Moscow'}
 
   updateLocation(loc.name, 'orange')
-  void fetchWeather(loc.lat, loc.lon, !savedLoc)
+  void fetchWeather(loc.lat, loc.lon, true)
 
   let lastCoords = {lat: loc.lat, lon: loc.lon}
   let updateTimes: number[] = []
@@ -291,10 +319,11 @@ export function initWeather(): void {
     updateTimes.push(now)
     lastCoords = {lat, lon}
 
-    const name = await fetchLocationName(lat, lon)
-    updateLocation(name, 'green')
-    writeStorage(LOCATION_KEY, JSON.stringify({lat, lon, name}))
-
     void fetchWeather(lat, lon, true)
+
+    const name = await fetchLocationName(lat, lon)
+    const locationName = name || `${lat.toFixed(2)}, ${lon.toFixed(2)}`
+    updateLocation(locationName, 'green')
+    writeStorage(LOCATION_KEY, JSON.stringify({lat, lon, name: locationName}))
   })
 }

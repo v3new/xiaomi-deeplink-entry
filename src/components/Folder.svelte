@@ -3,6 +3,7 @@ import type {App} from '../apps'
 import {APP_BY_ID} from '../apps'
 import type {FolderTile} from '../lib/layout'
 import {openFolderId} from '../lib/stores'
+import AppIcon from './AppIcon.svelte'
 
 let {tile}: {tile: FolderTile} = $props()
 
@@ -25,7 +26,7 @@ function open() {
 <button type="button" class="folder" onclick={open}>
   <span class="folder-grid" style="--mini:{mini}px">
     {#each preview as app (app.id)}
-      <img src={app.icon} alt="" />
+      <AppIcon src={app.icon} label={app.name} class="app-icon" />
     {/each}
   </span>
   <span class="folder-label">{tile.label}</span>

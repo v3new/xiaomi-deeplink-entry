@@ -5,6 +5,7 @@ import {defaultLayout} from '../apps/default-layout'
 import {hiddenAppIds} from '../lib/layout'
 import {showApp} from '../lib/layout-ops'
 import {editMode, layout} from '../lib/stores'
+import AppIcon from './AppIcon.svelte'
 
 const hidden = $derived(
   hiddenAppIds($layout)
@@ -30,7 +31,7 @@ function reset() {
       <div class="tray-row">
         {#each hidden as app (app.id)}
           <button type="button" class="tray-item" onclick={() => show(app.id)}>
-            <img src={app.icon} alt="" />
+            <AppIcon src={app.icon} label={app.name} class="app-icon" />
             <span>{app.name}</span>
           </button>
         {/each}

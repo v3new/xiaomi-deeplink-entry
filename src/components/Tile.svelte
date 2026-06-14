@@ -4,6 +4,7 @@ import {tryOpenDeeplink} from '../lib/deeplink'
 import type {Tile} from '../lib/layout'
 import {hideApp} from '../lib/layout-ops'
 import {editMode, layout} from '../lib/stores'
+import AppIcon from './AppIcon.svelte'
 import Folder from './Folder.svelte'
 
 let {tile}: {tile: Tile} = $props()
@@ -23,7 +24,7 @@ function remove() {
 
 {#if app}
   <button type="button" class="app-button" onclick={onClick}>
-    <img src={app.icon} alt={app.name} class="app-icon" />
+    <AppIcon src={app.icon} label={app.name} class="app-icon" />
     {app.name}
   </button>
   {#if $editMode}

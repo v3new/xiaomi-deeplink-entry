@@ -5,6 +5,7 @@ import {tryOpenDeeplink} from '../lib/deeplink'
 import type {FolderTile} from '../lib/layout'
 import {DEFAULT_FOLDER_LABEL, removeFromFolder, renameFolder} from '../lib/layout-ops'
 import {editMode, layout, openFolderId} from '../lib/stores'
+import AppIcon from './AppIcon.svelte'
 
 const folder = $derived(
   $layout.sections.flatMap(s => s.items).find((t): t is FolderTile => t.t === 'folder' && t.id === $openFolderId),
@@ -54,7 +55,7 @@ function focusSelect(node: HTMLInputElement) {
         {#each apps as app (app.id)}
           <div class="folder-app">
             <button type="button" class="app-button" onclick={() => openApp(app)}>
-              <img src={app.icon} alt={app.name} class="app-icon" />
+              <AppIcon src={app.icon} label={app.name} class="app-icon" />
               {app.name}
             </button>
             {#if $editMode}

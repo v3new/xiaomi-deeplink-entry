@@ -71,11 +71,15 @@
   margin-bottom: 8px;
 }
 
-.folder-grid img {
+.folder-grid .app-icon {
   width: var(--mini, 11px);
   height: var(--mini, 11px);
-  object-fit: cover;
   border-radius: 10px;
+  margin-bottom: 0;
+}
+
+.folder-grid .app-icon-initials {
+  font-size: calc(var(--mini, 11px) * 0.42);
 }
 
 .folder-label {
@@ -279,10 +283,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.tray-item img {
+.tray-item .app-icon {
   width: 42px;
   height: 42px;
   border-radius: 9px;
+  margin-bottom: 0;
 }
 
 .tray-item span {
