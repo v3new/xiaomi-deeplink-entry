@@ -15,6 +15,7 @@ const fallbackCoords = {lat: 55.7558, lon: 37.6176}
 let lastData: LocationState = {...fallbackCoords, speed: 0}
 const subscribers: LocationCb[] = []
 let watchId: number | null = null
+let hasLocationData = false
 let watching = false
 
 const batterySubscribers: BatteryCb[] = []
@@ -23,6 +24,7 @@ let batteryWatching = false
 
 function notify(state: LocationState): void {
   lastData = state
+  hasLocationData = true
   for (const cb of subscribers) {
     try {
       cb(state)
@@ -80,7 +82,7 @@ function startNativeWatch(): void {
 
 function watchLocation(cb: LocationCb): void {
   subscribers.push(cb)
-  cb(lastData)
+  if (hasLocationData) cb(lastData)
   if (!watching) {
     watching = true
     startNativeWatch()
