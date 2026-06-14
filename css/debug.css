@@ -36,6 +36,7 @@
 
 .debug-actions {
   display: flex;
+  align-items: center;
   gap: 6px;
   flex: 0 0 auto;
 }
@@ -48,6 +49,11 @@
   color: #d8ffe9;
   font: inherit;
   padding: 3px 7px;
+}
+
+.debug-copy-status {
+  color: #7dffb2;
+  white-space: nowrap;
 }
 
 .debug-log {
