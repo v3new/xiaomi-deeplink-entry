@@ -8,8 +8,6 @@ export const music: App[] = [
     scheme: 'yandexmusic',
     path: '',
     fallbackUrl: 'https://music.yandex.ru',
-    iconSource:
-      'https://play-lh.googleusercontent.com/mfSdQmzaqOdlWlygbCuJqNC0TNOSbjdXOH9BN9MVyuYYp5p6VD54KOmRmgPVv2sXlkc=s64-rw',
     icon: '/app-icons/yandex-music.webp',
   },
   {
@@ -19,8 +17,6 @@ export const music: App[] = [
     scheme: 'vnd.youtube.music',
     path: '',
     fallbackUrl: 'https://music.youtube.com',
-    iconSource:
-      'https://play-lh.googleusercontent.com/zD8UA5CRdiPzbvTwGKtzR4KjQpxqEK6X0tGDpzEaOo0xPEvG6HUiC_0qkpTfzpuMTqU=s64-rw',
     icon: '/app-icons/youtube-music.webp',
   },
   {
@@ -30,8 +26,6 @@ export const music: App[] = [
     scheme: 'apple-music',
     path: 'ru/new',
     fallbackUrl: 'https://music.apple.com',
-    iconSource:
-      'https://play-lh.googleusercontent.com/mOkjjo5Rzcpk7BsHrsLWnqVadUK1FlLd2-UlQvYkLL4E9A0LpyODNIQinXPfUMjUrbE=s64-rw',
     icon: '/app-icons/apple-music.webp',
   },
   {
@@ -41,8 +35,6 @@ export const music: App[] = [
     scheme: 'spotify',
     path: '',
     fallbackUrl: 'https://open.spotify.com',
-    iconSource:
-      'https://play-lh.googleusercontent.com/7ynvVIRdhJNAngCg_GI7i8TtH8BqkJYmffeUHsG-mJOdzt1XLvGmbsKuc5Q1SInBjDKN=s64-rw',
     icon: '/app-icons/spotify.webp',
   },
 ]

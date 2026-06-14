@@ -5,6 +5,7 @@ import process from 'node:process'
 const ROOT = process.cwd()
 const APPS_DIR = join(ROOT, 'src', 'apps')
 const ICONS_DIR = join(ROOT, 'public', 'app-icons')
+const SOURCES_FILE = join(ROOT, 'scripts', 'app-icon-sources.json')
 const APP_FILES = [
   'ai.ts',
   'communication.ts',
@@ -33,8 +34,7 @@ function extractApps(source, fileName) {
       const body = match[1]
       const id = extractStringProperty(body, 'id')
       const icon = extractStringProperty(body, 'icon')
-      const iconSource = extractStringProperty(body, 'iconSource')
-      return id && icon && iconSource ? {fileName, icon, iconSource, id} : null
+      return id && icon ? {fileName, icon, id} : null
     })
     .filter(Boolean)
 }
@@ -48,6 +48,10 @@ async function listApps() {
   }
 
   return apps
+}
+
+async function readIconSources() {
+  return JSON.parse(await readFile(SOURCES_FILE, 'utf8'))
 }
 
 async function downloadIcon(app) {
@@ -91,17 +95,23 @@ async function main() {
   await mkdir(ICONS_DIR, {recursive: true})
 
   const apps = await listApps()
+  const sources = await readIconSources()
   const seen = new Set()
   for (const app of apps) {
     if (seen.has(app.id)) throw new Error(`Duplicate icon id: ${app.id}`)
+    if (!sources[app.id]) throw new Error(`${app.id}: missing icon source in ${SOURCES_FILE}`)
     seen.add(app.id)
+  }
+
+  for (const id of Object.keys(sources)) {
+    if (!seen.has(id)) throw new Error(`${id}: icon source does not match any app id`)
   }
 
   let downloaded = 0
   let skipped = 0
 
   for (const app of apps) {
-    const result = await downloadIcon(app)
+    const result = await downloadIcon({...app, iconSource: sources[app.id]})
     if (result.status === 'downloaded') downloaded += 1
     else skipped += 1
     console.log(`${result.status.padEnd(10)} ${app.icon}`)

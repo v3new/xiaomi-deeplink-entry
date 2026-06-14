@@ -72,7 +72,7 @@ Explore our curated collection of apps organized into categories for your conven
 - Facebook
 - VK
 
-Tech enthusiasts can dive deeper into `src/apps` and check out full details like ID, package, scheme, fallback URL, icon, and more in the `SERVICES` constant. App icons are served locally from `public/app-icons`; run `bun run icons:download` to refresh them from each app's `iconSource`.
+Tech enthusiasts can dive deeper into `src/apps` and check out full details like ID, package, scheme, fallback URL, icon, and more in the `SERVICES` constant. App icons are served locally from `public/app-icons`; run `bun run icons:download` to refresh them from `scripts/app-icon-sources.json`.
 
 ## We Love Contributions! 💡
 
